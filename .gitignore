@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+qdrant_storage/
+bm25_indexes/
+lecture_cache/
+.ipynb_checkpoints/
