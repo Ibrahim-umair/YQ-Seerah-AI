@@ -4,4 +4,8 @@ __pycache__/
 qdrant_storage/
 bm25_indexes/
 lecture_cache/
+full_corpus_cache/
+full_corpus_bm25_index/
+batch_wave_inputs/
+manual_qa/
 .ipynb_checkpoints/
