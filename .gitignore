@@ -1,11 +1,19 @@
 .env
 __pycache__/
 *.pyc
-qdrant_storage/
-bm25_indexes/
-lecture_cache/
-full_corpus_cache/
-full_corpus_bm25_index/
-batch_wave_inputs/
-manual_qa/
 .ipynb_checkpoints/
+
+# Vector store data - rebuilt by `python -m seerah.ingest.embed` (~$0.28)
+qdrant_storage/
+
+# Full-corpus pipeline intermediates.
+# The committed artifacts under data/ (chunks_plain.json, chunks_contextual.json,
+# chunking_manifest.json) are enough to rebuild every one of these locally.
+data/contextual_cache/
+data/batch_wave_inputs/
+data/bm25_index/
+
+# Pilot evaluation intermediates (historical experiment, kept as evidence)
+lecture_cache/
+bm25_indexes/
+manual_qa/

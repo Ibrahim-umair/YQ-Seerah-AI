@@ -1,0 +1,33 @@
+# Seerah Lookup & Summarizer - core dependencies
+#
+# Covers the full-corpus ingestion pipeline (scripts/17, scripts/18) and the
+# interactive query tool (scripts/13). Versions are pinned to the exact
+# versions this project was developed and verified against.
+#
+#   python -m venv .venv && .venv\Scripts\activate   (Windows)
+#   python -m venv .venv && source .venv/bin/activate (macOS/Linux)
+#   pip install -r requirements.txt
+#
+# Developed on Python 3.13.7.
+#
+# This is the complete dependency set - the pilot evaluation in
+# pilot_evaluation/ runs on these too. The earlier BGE-M3 experiment needed
+# sentence-transformers and a multi-GB torch install; that model lost to
+# text-embedding-3-large and its code was removed, so the dependency is gone
+# with it. Its measured results are retained in the README and in
+# pilot_evaluation/retrieval_eval_results.json.
+
+# --- LLM + embeddings (OpenAI: contextual summaries, query embeddings) ---
+openai==1.109.1
+tiktoken==0.13.0
+
+# --- Vector store (runs via docker-compose.yml) ---
+qdrant-client==1.18.0
+
+# --- Chunking (SentenceSplitter) + BM25 keyword retrieval ---
+llama-index-core==0.14.23
+llama-index-retrievers-bm25==0.7.1
+
+# --- Config + CLI output ---
+python-dotenv==1.2.2
+rich==15.0.0
