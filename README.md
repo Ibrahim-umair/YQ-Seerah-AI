@@ -23,7 +23,7 @@ Chunks are built with sentence-aware splitting (LlamaIndex `SentenceSplitter`, 8
 
 ### Chunking reproducibility, and a data defect this uncovered
 
-`SentenceSplitter` reserves room for a `Document`'s metadata inside each chunk's token budget, so passing populated metadata shifts every chunk boundary. Earlier runs of this project did that and later runs did not, which left the corpus cut two different ways. `data/chunking_manifest.json` records which mode produced each lecture, so `python -m seerah.ingest.chunk --verify` reproduces the committed artifact byte-for-byte. New lectures should use `without_metadata`, which gives each chunk the full 800-token budget.
+`SentenceSplitter` reserves room for a `Document`'s metadata inside each chunk's token budget, so passing populated metadata shifts every chunk boundary. Earlier runs of this project did that and later runs did not, which left the corpus cut two different ways. `data/chunking_manifest.json` records which mode produced each lecture, so `python -m seerah.ingest.chunk --verify` reproduces the committed artifact byte-for-byte (`verify_against_artifact()`) and re-checks full transcript coverage (`report_coverage()`), both in `chunk.py`. New lectures should use `without_metadata`, which gives each chunk the full 800-token budget.
 
 That inconsistency also caused a real defect, since fixed. Three lectures (26, 42, 43) were interrupted mid-run and resumed by a later script that keyed resume on chunk *index*. Because the two runs cut the text differently, index *n* did not mean the same thing in both, and the resumed lectures spliced together chunks from two different cuts — silently dropping **2,201 characters** that then existed in no chunk and could not be retrieved (including As'ad ibn Zurara's speech at the Second Pledge of Aqaba, and the incident that triggered the conflict with Banu Qaynuqa). Nothing errored; the run reported a plausible chunk count and looked healthy.
 
@@ -89,6 +89,70 @@ Total cost for the full corpus: **$1.47** for contextual summaries (batch pricin
 
 ---
 
+## Retrieval evaluation on the full corpus, and hybrid search
+
+The 10-lecture pilot's ground truth was single-chunk, so Hit Rate@k/MRR (as taught in the course) applied directly. That premise breaks on the full corpus: the lecturer is repetitive and serializes events across multi-part arcs (Badr spans 7 lectures, the Conquest of Makkah spans 6), so a realistic answer often needs 2-4 chunks, sometimes from lectures dozens apart.
+
+To measure this honestly, an LLM wrote **304 tiered questions** against the real transcripts, each with a reference answer and verbatim supporting quotes — see `data/eval_questions_raw.json` and `seerah/eval/`. Tiers: **T1** (63, one chunk), **T2** (117, several chunks in one lecture), **T3** (124, several lectures — 40 of those tagged **cross-episode**, where the lectures are far apart rather than consecutive arc parts). Metrics are **recall@k** (the direct generalization of Hit Rate@k to multi-chunk ground truth — they're identical when a question needs exactly one chunk) and **full-coverage@k** (were *all* required chunks retrieved, not just some — the harsher, more decision-relevant bar for a question needing several pieces of evidence).
+
+**Vector vs. BM25 vs. hybrid (Reciprocal Rank Fusion), top-10, all 304 questions:**
+
+| Tier | n | Vector recall/full-cov | BM25 recall/full-cov | Hybrid k=60 (textbook default) | Hybrid k=8 | Hybrid k=10 (chosen) |
+|---|---:|---|---|---|---|---|
+| T1 | 63 | 0.847 / 0.809 | 0.704 / 0.651 | 0.881 / 0.841 | 0.929 / 0.889 | 0.929 / 0.889 |
+| T2 | 117 | 0.703 / 0.419 | 0.510 / 0.248 | 0.662 / 0.427 | 0.699 / 0.453 | 0.699 / 0.462 |
+| T3 | 124 | 0.591 / 0.266 | 0.436 / 0.177 | 0.562 / 0.282 | 0.578 / 0.298 | 0.582 / 0.298 |
+| cross-episode | 40 | 0.508 / 0.200 | 0.354 / 0.125 | 0.481 / 0.225 | 0.479 / 0.225 | 0.479 / 0.225 |
+| **ALL** | 304 | 0.687 / 0.438 | 0.520 / 0.303 | 0.667 / 0.454 | 0.697 / 0.480 | **0.699 / 0.484** |
+
+**Why RRF, and why k=10:** vector and BM25 scores are on incomparable scales (cosine ~0.5-0.6 vs. BM25 ~5-9), so any score-weighted fusion would just be dominated by whichever retriever's numbers are larger. RRF sidesteps this by fusing on rank position alone: `score = Σ 1/(k + rank)` across retrievers, deduplicated by chunk. `k=60` is the standard constant from the original RRF paper — but at `k=60`, hybrid was a genuine trade-off against vector alone: better full-coverage (0.454 vs. 0.438) at the cost of lower recall (0.667 vs. 0.687), because a flat score curve at high k requires both retrievers to roughly agree before rewarding a chunk. Sweeping `k` against this same 304-question set (`python -m seerah.eval.sweep_rrf_k`) shows lower k performs better here: a smaller k sharpens the score gap between top and lower ranks (at k=60, rank 1 is only 1.15x rank 10's score; at k=10, it's 1.82x), so a single retriever's strong ranking counts on its own instead of being washed out for lacking cross-retriever agreement — exactly what's needed to recover the cases where BM25 finds a chunk vector missed entirely, or vice versa. `k=10` matches or beats every other value tested (1 through 60) on full-coverage, stays within 0.004 of the best recall, and is never worse than its runner-up `k=8` on any tier for either metric — giving hybrid a clean win over vector alone on **both** metrics simultaneously (0.699/0.484 vs. 0.687/0.438), not the trade-off `k=60` produced.
+
+**Reproducing this**: `python -m seerah.eval.run_retrieval --batch` scores vector/BM25/hybrid against all 304 questions; `python -m seerah.eval.sweep_rrf_k` re-runs the k sweep; `python -m seerah.eval.validate_questions` checks the question set's own integrity (verbatim quotes, no duplicates, tier consistency) before trusting its numbers.
+
+---
+
+## LLM output evaluation: simple pipeline vs. agentic RAG
+
+Good retrieval doesn't guarantee a good final answer — the generator can still miss part of a multi-part question, state something the retrieved context doesn't actually support, or get outranked evidence wrong. This project has two generation backends, kept deliberately separate rather than one replacing the other:
+
+- **`seerah.answer.SeerahRAG`** — one retrieval call, one generation call. The simple pipeline.
+- **`seerah.agent.SeerahAgent`** — an agentic loop (`seerah/agent.py`), modeled directly on the course's own agentic-RAG lessons: a `search` tool the model calls itself, up to `AGENT_MAX_ITERATIONS` times, deciding when to search again and how to reword the query — the same self-correction pattern the course demonstrates with a literal typo (`"Olama"` → `"Ollama"`), applied here to Arabic transliteration ambiguity (`Badr`/`Badar`, `Ka'b`/`Kab`) instead.
+
+**Judge design** (`seerah/eval/judge_answers.py`), modeled on the course's `offline-rag-evaluation.ipynb`: an LLM judge classifies each generated answer on two *separate* axes, never conflated —
+
+- **Relevance** — does the answer's content agree with a curated reference answer, in substance. The judge is explicitly told the lecture series repeats itself and a reference's cited lecture is not exhaustive, so it must never penalize a correct answer for citing a different (but also correct) lecture.
+- **Faithfulness** — is the answer actually supported by the context the generator was *given* this run, independent of whether it happens to be historically correct. This is the hallucination check.
+
+**Baseline** (`--full`, simple pipeline, all 304 questions): 248 RELEVANT, 53 PARTLY_RELEVANT, 3 NON_RELEVANT.
+
+**Closing the gap, iteratively.** The 56 non-RELEVANT questions were retested on the agentic bot and re-judged after each instruction change:
+
+| Round | Still not RELEVANT (of 56) | What changed |
+|---|---:|---|
+| Agentic, v1 instructions | 15 | Baseline agentic instructions (search tool, transliteration awareness, cite only what's retrieved) |
+| Agentic, v2 instructions | 11 | Replaced a flawed "search for the lecture dedicated to this outcome" instruction — it was actually making things *worse*: the model re-searched using the wrong outcome it already (wrongly) believed, which just reconfirmed the wrong narrative. Replaced with "search by the person/event's name only, not the outcome you already found," so a differing account can actually surface. |
+| Synthesis-fix instructions + corpus fix | 3 (+1 unresolved) | Added instructions to verify specific claims (not infer them from related-but-different evidence) and to check that multi-part questions are fully answered before stopping. Fixed 2 of the remaining 11 outright via the corpus correction below. 1 more (`C1-008`) never resolved to a reliable verdict at all — see below. |
+
+One finding along the way that shaped how the rest of this evaluation was read: **`gpt-5.6-luna` has no exposed temperature or seed parameter** (confirmed via a live 400 error, not assumed) and demonstrably gives different verdicts on identical input across independent runs. A single judge call on a borderline question is not proof of a fixed defect, so every remaining disputed question was re-run 3x independently before being called "consistently bad" vs. "flaky."
+
+**The last 2 were not a model or retrieval bug — they were the lecturer's own transcript.** Two of the hardest remaining cases traced back to the source material itself: lecture 70 mis-stated *when* Huyay ibn Akhtab was executed (transcribed near "the very beginning of the battle of Khaybar," rather than after the Battle of the Trench alongside Banu Qurayza), and lecture 20 described Ta'if as "reconquered" during the Battle of Hunayn, when the siege there was in fact unsuccessful. The agent was faithfully reproducing what Shaykh Yasir Qadhi actually said — a correct-per-source answer that was still historically imprecise. Both were confirmed as unintentional slips (cross-checked against lecture 83's detailed, dedicated account of Ta'if) and corrected as a **surgical patch**: transcript → plain chunk → contextual summary/cache → Qdrant embedding → BM25, touching only those 2 of 2,763 chunks, with no full re-chunk or re-embed of the corpus.
+
+**Final result, all questions reconciled to their latest tested status** (`data/eval_final_results.json`), 303 of the original 304 (one question produced a genuine 3-way split — NON/PARTLY/RELEVANT, one vote each, across 3 independent runs — and was excluded rather than forced into a category; it's logged with its reason in the file's `excluded_questions`):
+
+| Relevance | n | % |
+|---|---:|---:|
+| RELEVANT | 300 | 99.0% |
+| PARTLY_RELEVANT | 3 | 1.0% |
+| NON_RELEVANT | 0 | 0.0% |
+
+Faithfulness across all 303: **294 GROUNDED, 9 PARTIALLY_GROUNDED, 0 UNGROUNDED** — no hallucination found anywhere in the set, including on the 3 questions still not fully RELEVANT.
+
+The 233 questions that already passed on the simple pipeline were not individually re-run on the agentic bot — the agentic bot is a strict superset of the simple pipeline's capability (same retrieval, same model, plus the ability to search again), so re-paying for ~250 questions that already passed was judged not worth it. A stratified 5-question spot-check across tiers confirmed no regression. The remaining 3 PARTLY_RELEVANT questions (`A1-020`, consistently; `A7-019` and `A9-009`, only sometimes) are a known, documented limitation rather than a silently-accepted one.
+
+**Reproducing this**: `python -m seerah.eval.judge_answers --full` (baseline, simple pipeline) or `--full --agentic` (agentic bot); `--retest-file <prior_output.json> --agentic` to re-judge only what a prior run flagged; `--ids A,B,C --agentic --repeat 3` to check self-consistency on specific questions.
+
+---
+
 ## Running the pipeline
 
 ### Quick start
@@ -146,5 +210,4 @@ seerah/                 the application
   ingest/               the four stages above
 data/                   dataset and pipeline artifacts
 pilot_evaluation/       the 10-lecture retrieval experiment (frozen evidence)
-dropped_manual_question_workflow/   an approach that was tried and abandoned
 ```

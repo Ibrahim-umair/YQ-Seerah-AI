@@ -108,3 +108,62 @@ class Retriever:
             for n in nodes
         ]
         return hits, search_seconds
+
+    def hybrid_search(self, query, top_k=DEFAULT_TOP_K, candidate_pool=config.RRF_CANDIDATE_POOL, k=None):
+        """Fuses vector + BM25 via Reciprocal Rank Fusion. Returns (hits, timings).
+
+        Each retriever is queried at `candidate_pool` depth (wider than top_k),
+        so a chunk that just misses one retriever's shallow top-k still gets a
+        chance to be pulled up by a strong ranking from the other.
+
+        `k` overrides config.RRF_K for this call - useful for sweeping the
+        constant without touching global config (see seerah.eval.sweep_rrf_k).
+        """
+        vector_hits, embed_seconds, vector_seconds = self.vector_search(query, candidate_pool)
+        bm25_hits, bm25_seconds = self.bm25_search(query, candidate_pool)
+
+        t0 = time.perf_counter()
+        fused_hits = reciprocal_rank_fusion((vector_hits, bm25_hits), config.RRF_K if k is None else k, top_k)
+        fuse_seconds = time.perf_counter() - t0
+
+        timings = {
+            "embed_seconds": embed_seconds,
+            "vector_seconds": vector_seconds,
+            "bm25_seconds": bm25_seconds,
+            "fuse_seconds": fuse_seconds,
+        }
+        return fused_hits, timings
+
+
+def reciprocal_rank_fusion(result_lists, k, top_k):
+    """Fuses any number of already-ranked Hit lists into one, by rank position
+    alone (never raw score - the lists may be on incomparable scales).
+
+    Pulled out as a standalone function, separate from hybrid_search's network
+    calls, so a k-value sweep can fetch each retriever's candidates ONCE and
+    re-fuse them at many k values purely in memory - no repeated embedding
+    calls or index queries just to test a different k.
+
+    Chunks are deduplicated by (lecture_number, chunk_index) - the same chunk
+    appearing in more than one list is fused once, not double-counted.
+    """
+    rrf_scores = {}
+    representative = {}
+    for hits in result_lists:
+        for rank, hit in enumerate(hits, start=1):
+            key = (hit.lecture_number, hit.chunk_index)
+            rrf_scores[key] = rrf_scores.get(key, 0.0) + 1.0 / (k + rank)
+            representative.setdefault(key, hit)
+
+    ranked_keys = sorted(rrf_scores, key=rrf_scores.get, reverse=True)[:top_k]
+    return [
+        Hit(
+            score=rrf_scores[key],
+            lecture_number=representative[key].lecture_number,
+            canonical_title=representative[key].canonical_title,
+            youtube_url=representative[key].youtube_url,
+            chunk_index=representative[key].chunk_index,
+            text=representative[key].text,
+        )
+        for key in ranked_keys
+    ]

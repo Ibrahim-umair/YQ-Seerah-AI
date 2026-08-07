@@ -1,0 +1,3076 @@
+{
+  "total_questions": 303,
+  "missing_records": [],
+  "relevance_counts": {
+    "RELEVANT": 300,
+    "PARTLY_RELEVANT": 3,
+    "NON_RELEVANT": 0
+  },
+  "faithfulness_counts": {
+    "GROUNDED": 294,
+    "PARTIALLY_GROUNDED": 9,
+    "UNGROUNDED": 0
+  },
+  "pipeline_counts": {
+    "agentic": 70,
+    "simple": 233
+  },
+  "tier_breakdown": {
+    "T1": {
+      "n": 63,
+      "RELEVANT": 63,
+      "PARTLY_RELEVANT": 0,
+      "NON_RELEVANT": 0
+    },
+    "T2": {
+      "n": 117,
+      "RELEVANT": 114,
+      "PARTLY_RELEVANT": 3,
+      "NON_RELEVANT": 0
+    },
+    "T3": {
+      "n": 123,
+      "RELEVANT": 123,
+      "PARTLY_RELEVANT": 0,
+      "NON_RELEVANT": 0
+    }
+  },
+  "results": [
+    {
+      "question_id": "A1-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "A1-002",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "A1-003",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "A1-004",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-005",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-006",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-007",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-008",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-009",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-010",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_spotcheck",
+      "note": "regression spot-check"
+    },
+    {
+      "question_id": "A1-012",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-014",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "A1-016",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-017",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A1-019",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A1-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "PARTLY_RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_holdouts (3x self-consistency)",
+      "note": "self-consistency 3/3 - consistent"
+    },
+    {
+      "question_id": "A2-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-002",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-003",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-004",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-005",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-006",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-007",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-008",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-009",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-010",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "A2-012",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-014",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-016",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "A2-017",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A2-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-019",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A2-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-002",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-003",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-004",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-005",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-006",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-007",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-008",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-009",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-010",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "A3-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-012",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A3-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-014",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A3-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-016",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-017",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A3-019",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A3-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A4-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-002",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-003",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-004",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-005",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-006",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-007",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-008",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-009",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A4-010",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-012",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-014",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-016",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A4-017",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-019",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A4-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-002",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A5-003",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-004",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-005",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-006",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-007",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-008",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A5-009",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-010",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-012",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-014",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A5-016",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-017",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A5-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A5-019",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A5-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-002",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-003",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-004",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-005",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-006",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_spotcheck",
+      "note": "regression spot-check"
+    },
+    {
+      "question_id": "A6-007",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-008",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-009",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-010",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-012",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-014",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A6-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-016",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-017",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A6-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-019",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A6-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-002",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-003",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-004",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-005",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-006",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-007",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-008",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-009",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-010",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-012",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-014",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-016",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-017",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A7-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A7-019",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "PARTLY_RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_holdouts (3x self-consistency)",
+      "note": "self-consistency 2/3 - inconsistent, flaky"
+    },
+    {
+      "question_id": "A7-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-002",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-003",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-004",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-005",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-006",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-007",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-008",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-009",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-010",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-012",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-014",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-016",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-017",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-019",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A8-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-001",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-002",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A9-003",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-004",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-005",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-006",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-007",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-008",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-009",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "PARTLY_RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_holdouts (3x self-consistency)",
+      "note": "self-consistency 2/3 - inconsistent, flaky"
+    },
+    {
+      "question_id": "A9-010",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-011",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "A9-012",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-013",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-014",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-015",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-016",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-017",
+      "tier": "T1",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-018",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-019",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "A9-020",
+      "tier": "T2",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B1-001",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B1-002",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-003",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-004",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B1-005",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-006",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-007",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-008",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B1-009",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-010",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-011",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-012",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-013",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-014",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B1-015",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B1-016",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B1-017",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-018",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-019",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-020",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B1-021",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-022",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-023",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-024",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-025",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B1-026",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B1-027",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_holdouts (3x self-consistency)",
+      "note": "self-consistency 3/3 - consistent"
+    },
+    {
+      "question_id": "B2-001",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-002",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-003",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-004",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-005",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-006",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-007",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B2-008",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-009",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-010",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B2-011",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-012",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-013",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_spotcheck",
+      "note": "regression spot-check"
+    },
+    {
+      "question_id": "B2-014",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-015",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B2-016",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B2-017",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-018",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-019",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_spotcheck",
+      "note": "regression spot-check"
+    },
+    {
+      "question_id": "B2-020",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B2-021",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B2-022",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-023",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-024",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-025",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-026",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B2-027",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-028",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-029",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-030",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B2-031",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-001",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-002",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B3-003",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B3-004",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B3-005",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B3-006",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B3-007",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-008",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-009",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-010",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-011",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-012",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-013",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-014",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-015",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-016",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-017",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "B3-018",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-019",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-020",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "PARTIALLY_GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-021",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-022",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "B3-023",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-024",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-025",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "B3-026",
+      "tier": "T3",
+      "cross_episode": false,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-001",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-002",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-003",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-004",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-005",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-006",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-007",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-009",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-010",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_spotcheck",
+      "note": "post-corpus-fix retest"
+    },
+    {
+      "question_id": "C1-011",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C1-012",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-013",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-014",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C1-015",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-016",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C1-017",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-018",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C1-019",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C1-020",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C2-001",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "C2-002",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "tmp_synthesis_fix_test",
+      "note": ""
+    },
+    {
+      "question_id": "C2-003",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C2-004",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-005",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-006",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-007",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-008",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-009",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C2-010",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C2-011",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-012",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_final_spotcheck",
+      "note": "post-corpus-fix retest"
+    },
+    {
+      "question_id": "C2-013",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-014",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    },
+    {
+      "question_id": "C2-015",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-016",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-017",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-018",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-019",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "simple",
+      "source": "judge_full (baseline, never re-tested agentic)",
+      "note": "passed simple pipeline; not independently re-tested on agentic bot"
+    },
+    {
+      "question_id": "C2-020",
+      "tier": "T3",
+      "cross_episode": true,
+      "relevance": "RELEVANT",
+      "faithfulness": "GROUNDED",
+      "pipeline": "agentic",
+      "source": "judge_retest_agentic_v2",
+      "note": ""
+    }
+  ],
+  "excluded_questions": [
+    {
+      "question_id": "C1-008",
+      "reason": "genuine 3-way tie across 3 independent agentic runs (NON_RELEVANT/PARTLY_RELEVANT/RELEVANT, 1 each) - no reliable verdict, excluded from final tally rather than forced into a category"
+    }
+  ]
+}

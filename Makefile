@@ -54,6 +54,7 @@ help:
 	@echo "  Use it"
 	@echo "    make query              interactive retrieval over all 104 lectures"
 	@echo "    make verify             run every verification check"
+	@echo "    make validate-questions check the evaluation question set's integrity"
 	@echo "    make eval               re-run the pilot retrieval evaluation"
 	@echo ""
 	@echo "    make rebuild-all        rebuild EVERY stage from the transcripts (slow, costs money)"
@@ -123,7 +124,10 @@ text-search-rebuild:
 query:
 	$(PY) -m seerah.cli
 
-verify: chunk-verify embed-verify
+verify: chunk-verify embed-verify validate-questions
+
+validate-questions:
+	$(PY) -m seerah.eval.validate_questions
 
 eval:
 	$(PY) pilot_evaluation/evaluate_retrieval.py
