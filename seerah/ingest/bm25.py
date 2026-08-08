@@ -33,6 +33,8 @@ def build(chunks):
                 "canonical_title": c["canonical_title"],
                 "youtube_url": c["youtube_url"],
                 "chunk_index": c["chunk_index"],
+                "start_timestamp": c.get("start_timestamp", ""),
+                "start_timestamp_seconds": c.get("start_timestamp_seconds", 0.0),
             },
         )
         for i, c in enumerate(chunks)

@@ -25,10 +25,21 @@ class Hit:
     youtube_url: str
     chunk_index: int
     text: str
+    start_timestamp: str = ""
+    start_timestamp_seconds: float = 0.0
 
     @property
     def citation(self):
         return f"Lecture {self.lecture_number}: {self.canonical_title} ({self.youtube_url})"
+
+    @property
+    def timestamped_url(self):
+        """youtube_url with &t=<seconds>s appended, so a citation jumps straight
+        to the moment in the lecture this chunk covers, not just the video."""
+        if not self.youtube_url:
+            return self.youtube_url
+        sep = "&" if "?" in self.youtube_url else "?"
+        return f"{self.youtube_url}{sep}t={int(self.start_timestamp_seconds)}s"
 
 
 class Retriever:
@@ -84,6 +95,8 @@ class Retriever:
                 youtube_url=p.payload.get("youtube_url", ""),
                 chunk_index=p.payload["chunk_index"],
                 text=p.payload["text"],
+                start_timestamp=p.payload.get("start_timestamp", ""),
+                start_timestamp_seconds=p.payload.get("start_timestamp_seconds", 0.0),
             )
             for p in response.points
         ]
@@ -104,6 +117,8 @@ class Retriever:
                 youtube_url=n.metadata.get("youtube_url", ""),
                 chunk_index=n.metadata["chunk_index"],
                 text=n.get_content(),
+                start_timestamp=n.metadata.get("start_timestamp", ""),
+                start_timestamp_seconds=n.metadata.get("start_timestamp_seconds", 0.0),
             )
             for n in nodes
         ]
@@ -164,6 +179,8 @@ def reciprocal_rank_fusion(result_lists, k, top_k):
             youtube_url=representative[key].youtube_url,
             chunk_index=representative[key].chunk_index,
             text=representative[key].text,
+            start_timestamp=representative[key].start_timestamp,
+            start_timestamp_seconds=representative[key].start_timestamp_seconds,
         )
         for key in ranked_keys
     ]

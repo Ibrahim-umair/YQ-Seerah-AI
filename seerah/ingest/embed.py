@@ -121,6 +121,8 @@ def build(qdrant, chunks):
                         "youtube_url": c["youtube_url"],
                         "chunk_index": c["chunk_index"],
                         "text": c["text"],
+                        "start_timestamp": c.get("start_timestamp", ""),
+                        "start_timestamp_seconds": c.get("start_timestamp_seconds", 0.0),
                     },
                 )
                 for i, c in enumerate(batch)

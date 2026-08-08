@@ -74,7 +74,8 @@ def print_answer_and_sources(answer, hits, show_context):
 
     console.print("\n[dim]Sources:[/dim]")
     for hit in hits:
-        console.print(f"  - {hit.citation}, chunk {hit.chunk_index}")
+        console.print(f"  - {hit.citation}, chunk {hit.chunk_index}"
+                       f" [dim]@ {hit.start_timestamp}[/dim] -> {hit.timestamped_url}")
 
     if show_context:
         console.print("\n[dim]Retrieved context used:[/dim]")
