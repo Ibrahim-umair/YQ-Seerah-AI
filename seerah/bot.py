@@ -12,11 +12,18 @@ final answer.
 for comparison: one retrieval call, one LLM call, no query correction, no
 agentic loop.
 
+In agent mode, consecutive questions in the same session are chained as one
+multi-turn conversation via OpenAI's previous_response_id (see
+seerah.agent.SeerahAgent.ask) - so a follow-up like "what about his wife?"
+can lean on what was just discussed. Type 'new' instead of a question to
+drop the chain and start a fresh, unrelated conversation without restarting
+the whole session.
+
 Usage:
     python -m seerah.bot
     python -m seerah.bot --max-iterations 5
     python -m seerah.bot --show-context      # also print the chunks the answer was grounded in
-    python -m seerah.bot --simple            # old single-shot pipeline, no agent
+    python -m seerah.bot --simple            # old single-shot pipeline, no agent, no multi-turn
     python -m seerah.bot --simple --top-k 5
 """
 
@@ -68,9 +75,13 @@ def make_on_event(console, prev_query_holder):
     return on_event
 
 
-def print_answer_and_sources(answer, hits, show_context):
+def print_answer_and_sources(answer, hits, show_context, usage=None):
     console.print()
     console.print(Panel(Markdown(answer), title="Answer", title_align="left"))
+
+    if usage:
+        console.print(f"[dim]{usage['total_tokens']} tokens, ${usage['cost']:.4f}, "
+                      f"{usage['response_time']:.1f}s[/dim]")
 
     console.print("\n[dim]Sources:[/dim]")
     for hit in hits:
@@ -109,6 +120,8 @@ def main():
         "Ask a question about the Seerah. Type 'exit', 'quit', or submit an empty line to stop.\n"
     )
 
+    last_response_id = None
+
     while True:
         try:
             query = console.input("[bold cyan]Ask> [/bold cyan]").strip()
@@ -118,14 +131,22 @@ def main():
         if not query or query.lower() in ("exit", "quit"):
             console.print("Bye.")
             break
+        if not args.simple and query.lower() == "new":
+            last_response_id = None
+            console.print("[dim](started a fresh conversation)[/dim]\n")
+            continue
 
+        usage = None
         if args.simple:
             answer, hits = bot.rag(query, top_k=args.top_k)
         else:
             prev_query_holder = [None]
-            answer, hits, _search_log = bot.ask(query, on_event=make_on_event(console, prev_query_holder))
+            answer, hits, _search_log, usage = bot.ask(
+                query, on_event=make_on_event(console, prev_query_holder),
+                previous_response_id=last_response_id)
+            last_response_id = usage["response_id"]
 
-        print_answer_and_sources(answer, hits, args.show_context)
+        print_answer_and_sources(answer, hits, args.show_context, usage)
         console.print("\n" + "=" * 90 + "\n")
 
 

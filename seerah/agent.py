@@ -27,11 +27,34 @@ judged, and compared - not just so the newer one silently takes over.
 """
 
 import json
+import re
+import time
+import unicodedata
 
 from openai import OpenAI
 
 from seerah import config
 from seerah.retrieve import Retriever
+
+# Seen twice in the wild, same shape both times: a Unicode private-use-area
+# character, the literal word "cite", another marker, the leaked citation
+# title (e.g. "Lecture 14: Torture and persecution of the weak"), then a
+# closing marker - an inline citation format meant for a client that
+# resolves it via the response's annotations, not for raw display. Bounded
+# to a short span so it can't runaway-match into unrelated later text if the
+# closing marker is ever missing.
+PUA_CHAR = r"[\x00-\x08\x0b\x0c\x0e-\x1f-]"
+CITATION_MARKER_RE = re.compile(rf"{PUA_CHAR}+cite{PUA_CHAR}+.{{0,120}}?{PUA_CHAR}", re.IGNORECASE)
+
+
+def strip_control_chars(text):
+    """Removes the inline citation-marker artifact above, then - as a
+    fallback - any remaining stray Unicode private-use/control characters
+    on their own (renders as a tofu box □ in a browser; no font has a glyph
+    for them). Never legitimate visible content either way."""
+    text = CITATION_MARKER_RE.sub("", text)
+    return "".join(ch for ch in text if unicodedata.category(ch) not in ("Co", "Cc") or ch == "\n")
+
 
 INSTRUCTIONS = """
 You are a research assistant answering questions about the Seerah (the life
@@ -42,6 +65,12 @@ what your searches actually return.
 
 Use the search tool to look things up. Use as many concrete keywords from the
 question as possible in your first search.
+
+If this question follows an earlier one in the same conversation, use that
+earlier context only when it's actually relevant to this question. If this
+question is on an unrelated topic, answer it as a fresh question - do not
+force a connection to what was discussed before, and do not let evidence
+retrieved for the earlier question leak into this answer.
 
 Names and places in this corpus are transliterated Arabic with no single
 fixed spelling (for example "Badr" may also appear as "Badar"; "Ka'b" as
@@ -149,7 +178,7 @@ class SeerahAgent:
         hits, _timings = self.retriever.hybrid_search(query, top_k=self.search_top_k)
         return hits
 
-    def ask(self, question, on_event=None):
+    def ask(self, question, on_event=None, previous_response_id=None):
         """Runs the agentic loop.
 
         on_event(dict), if given, is called for every search the model makes
@@ -158,16 +187,32 @@ class SeerahAgent:
         are rendered. The final answer is NOT sent through on_event; it comes
         back as this method's return value, same as SeerahRAG.rag().
 
-        Returns (answer, hits, search_log):
+        previous_response_id, if given, is passed to the FIRST API call this
+        ask() makes - OpenAI then prepends that earlier response's full
+        conversation state (including its own tool calls) server-side, so a
+        multi-turn conversation needs no manually-reconstructed message
+        history here. Internal search iterations within THIS call still
+        chain locally via `messages`, unaffected - this only matters for
+        carrying context in from a PRIOR call to ask().
+
+        Returns (answer, hits, search_log, usage):
           - hits: every chunk retrieved across all iterations, deduplicated
             by (lecture_number, chunk_index) - the union, for citations.
           - search_log: [{iteration, query, reason, num_hits}, ...]
+          - usage: {model, prompt_tokens, completion_tokens, total_tokens,
+            cost, response_time, response_id} - token/cost/timing summed
+            across every LLM call this ask() made (every search-decision
+            round plus the final answer), not just the last one - so cost
+            reflects the whole question, not one call within it. response_id
+            is the final call's id - pass it as previous_response_id on a
+            later ask() to continue this conversation.
         """
 
         def emit(event):
             if on_event:
                 on_event(event)
 
+        start_time = time.perf_counter()
         messages = [
             {"role": "developer", "content": self.instructions},
             {"role": "user", "content": question},
@@ -177,6 +222,9 @@ class SeerahAgent:
         search_log = []
         iteration = 0
         final_answer = None
+        prompt_tokens = 0
+        completion_tokens = 0
+        cached_tokens = 0
 
         while final_answer is None:
             iteration += 1
@@ -192,8 +240,15 @@ class SeerahAgent:
                              "tools": None if forced else [SEARCH_TOOL]}
             if self.temperature is not None:
                 create_kwargs["temperature"] = self.temperature
+            if iteration == 1 and previous_response_id is not None:
+                create_kwargs["previous_response_id"] = previous_response_id
             response = self.llm_client.responses.create(**create_kwargs)
             messages.extend(response.output)
+            last_response_id = response.id
+
+            prompt_tokens += response.usage.input_tokens
+            completion_tokens += response.usage.output_tokens
+            cached_tokens += getattr(response.usage.input_tokens_details, "cached_tokens", 0) or 0
 
             function_calls = [item for item in response.output if item.type == "function_call"]
             note_texts = [item.content[0].text for item in response.output if item.type == "message"]
@@ -222,8 +277,17 @@ class SeerahAgent:
                 continue
 
             # no function calls this turn -> this IS the final answer
-            final_answer = note_texts[0] if note_texts else (
+            final_answer = strip_control_chars(note_texts[0]) if note_texts else (
                 "I don't have enough information in the lectures to answer that."
             )
 
-        return final_answer, list(all_hits.values()), search_log
+        usage = {
+            "model": self.model,
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "total_tokens": prompt_tokens + completion_tokens,
+            "cost": config.summary_cost(self.model, prompt_tokens, completion_tokens, cached_tokens),
+            "response_time": time.perf_counter() - start_time,
+            "response_id": last_response_id,
+        }
+        return final_answer, list(all_hits.values()), search_log, usage

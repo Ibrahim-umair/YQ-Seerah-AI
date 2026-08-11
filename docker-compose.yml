@@ -8,3 +8,16 @@ services:
     volumes:
       - ./qdrant_storage:/qdrant/storage
     restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: seerah_postgres
+    environment:
+      POSTGRES_DB: seerah
+      POSTGRES_USER: seerah
+      POSTGRES_PASSWORD: seerah
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_storage:/var/lib/postgresql/data
+    restart: unless-stopped

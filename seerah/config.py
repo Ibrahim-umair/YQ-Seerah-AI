@@ -5,6 +5,7 @@ stages can't quietly drift apart from each other the way the earlier
 standalone scripts did.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -43,6 +44,12 @@ QDRANT_URL = "http://localhost:6333"
 COLLECTION_NAME = "seerah_full_corpus_contextual"
 EMBED_BATCH_SIZE = 50
 
+# --- Conversation/feedback log (runs via docker-compose.yml) ----------------
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "seerah")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "seerah")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "seerah")
+
 # --- Hybrid search (Reciprocal Rank Fusion) ----------------------------------
 # RRF combines vector + BM25 by RANK POSITION, not raw score - the two are on
 # incomparable scales (cosine ~0.5-0.6 vs BM25 ~5-9), so any score-weighted
@@ -76,7 +83,14 @@ POLL_MAX_SECONDS = 600
 POLL_BACKOFF_FACTOR = 1.6
 
 # Batch API pricing = 50% off standard, per 1M tokens.
-MODEL_RATES = {"gpt-5.4-nano": {"input": 0.10, "cached_input": 0.01, "output": 0.625}}
+MODEL_RATES = {
+    "gpt-5.4-nano": {"input": 0.10, "cached_input": 0.01, "output": 0.625},
+    # Short-context tier only - this project's requests (a chunk is ~800 tokens,
+    # even a full 6-iteration agentic loop's accumulated history) never approach
+    # the long-context threshold. "Cache writes" pricing isn't tracked here since
+    # the OpenAI usage object doesn't expose a cache-write token count to charge it against.
+    "gpt-5.6-luna": {"input": 0.20, "cached_input": 0.02, "output": 1.20},
+}
 EMBEDDING_RATE = 0.13  # text-embedding-3-large, per 1M tokens
 
 TOKENIZER = tiktoken.get_encoding("cl100k_base")

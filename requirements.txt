@@ -31,3 +31,10 @@ llama-index-retrievers-bm25==0.7.1
 # --- Config + CLI output ---
 python-dotenv==1.2.2
 rich==15.0.0
+
+# --- Application interface (FastAPI wrapper around the agentic bot) ---
+fastapi==0.141.1
+uvicorn[standard]==0.46.0
+
+# --- Conversation/feedback logging (runs via docker-compose.yml) ---
+psycopg[binary]==3.3.4

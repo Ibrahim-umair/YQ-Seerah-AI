@@ -145,7 +145,7 @@ def judge_llm(client, model, prompt):
 
 def judge_question(q, bot, judge_model, top_k, agentic):
     if agentic:
-        answer, hits, search_log = bot.ask(q["question"])
+        answer, hits, search_log, _usage = bot.ask(q["question"])
     else:
         answer, hits = bot.rag(q["question"], top_k=top_k)
         search_log = None

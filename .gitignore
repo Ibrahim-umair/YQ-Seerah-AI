@@ -6,6 +6,9 @@ __pycache__/
 # Vector store data - rebuilt by `python -m seerah.ingest.embed` (~$0.28)
 qdrant_storage/
 
+# Conversation/feedback log DB - rebuilt empty by seerah.db.init_db()
+postgres_storage/
+
 # Full-corpus pipeline intermediates.
 # The committed artifacts under data/ (chunks_plain.json, chunks_contextual.json,
 # chunking_manifest.json) are enough to rebuild every one of these locally.
