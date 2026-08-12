@@ -40,7 +40,11 @@ EMBEDDING_MODEL = "text-embedding-3-large"
 EMBEDDING_DIM = 3072
 
 # --- Vector store -----------------------------------------------------------
-QDRANT_URL = "http://localhost:6333"
+# localhost is correct when running directly on the host (bot.py, cli.py, or
+# the API run outside Docker) - override to http://qdrant:6333 when the API
+# itself runs inside the docker-compose network, since containers reach each
+# other by service name, not localhost (same reasoning as POSTGRES_HOST below).
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 COLLECTION_NAME = "seerah_full_corpus_contextual"
 EMBED_BATCH_SIZE = 50
 

@@ -13,7 +13,7 @@
 # Run every target from the repository root.
 
 .DEFAULT_GOAL := help
-.PHONY: help install up down logs setup verify query \
+.PHONY: help install up up-infra down logs setup verify query bot api db \
         chunk chunk-rebuild chunk-verify \
         context context-rebuild context-plan \
         embed embed-rebuild embed-verify \
@@ -29,8 +29,11 @@ help:
 	@echo ""
 	@echo "  Setup"
 	@echo "    make install            install pinned dependencies"
-	@echo "    make up / down / logs   start / stop / tail Qdrant"
-	@echo "    make setup              up + embed + text-search  (everything a fresh clone needs)"
+	@echo "    make up-infra           start ONLY Qdrant + Postgres (no app/Grafana yet)"
+	@echo "    make up / down / logs   start / stop / tail the FULL stack (app, Qdrant, Postgres, Grafana)"
+	@echo "    make db                 create the conversations/feedback Postgres tables"
+	@echo "    make setup              everything a fresh clone needs, in the right order:"
+	@echo "                            infra up -> embed -> text-search -> db -> full stack up"
 	@echo ""
 	@echo "  Stage 1 - chunk        transcripts -> data/chunks_plain.json        (free)"
 	@echo "    make chunk              use the committed artifact"
@@ -52,17 +55,25 @@ help:
 	@echo "    make text-search-rebuild  rebuild it"
 	@echo ""
 	@echo "  Use it"
-	@echo "    make query              interactive retrieval over all 104 lectures"
+	@echo "    make query              interactive raw retrieval, no generation, over all 104 lectures"
+	@echo "    make bot                interactive agentic Q&A on the host (add ARGS='--simple' for SeerahRAG)"
+	@echo "    make api                run the FastAPI app directly on the host, with --reload"
 	@echo "    make verify             run every verification check"
 	@echo "    make validate-questions check the evaluation question set's integrity"
 	@echo "    make eval               re-run the pilot retrieval evaluation"
 	@echo ""
 	@echo "    make rebuild-all        rebuild EVERY stage from the transcripts (slow, costs money)"
+	@echo ""
+	@echo "  Once 'make setup' has run: frontend is 'cd frontend && npm install && npm run dev'."
+	@echo "  Grafana dashboard at http://localhost:3000 (admin/admin) - local only, never public."
 
 # --- setup ------------------------------------------------------------------
 
 install:
 	$(PY) -m pip install -r requirements.txt
+
+up-infra:
+	docker compose up -d qdrant postgres
 
 up:
 	docker compose up -d
@@ -73,10 +84,23 @@ down:
 logs:
 	docker compose logs -f qdrant
 
+db:
+	$(PY) -m seerah.db
+
+bot:
+	$(PY) -m seerah.bot $(ARGS)
+
+api:
+	$(PY) -m uvicorn seerah.api:app --reload
+
 # Everything a fresh clone needs: the two stages upstream of this are committed.
-setup: up embed text-search
+# Infra (qdrant+postgres) has to come up and get populated BEFORE the full
+# stack, or the `app` container crash-loops - it checks the Qdrant collection
+# exists at startup, by design (see seerah/retrieve.py).
+setup: up-infra embed text-search db up
 	@echo ""
-	@echo "Ready. Run 'make query' to search the corpus."
+	@echo "Ready. Run 'make query' or 'make bot' to search the corpus, or 'make api' to run"
+	@echo "the API on the host - the containerized one is already up at http://localhost:8000."
 
 # --- stage 1: chunk ---------------------------------------------------------
 

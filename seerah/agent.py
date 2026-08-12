@@ -253,10 +253,11 @@ class SeerahAgent:
             function_calls = [item for item in response.output if item.type == "function_call"]
             note_texts = [item.content[0].text for item in response.output if item.type == "message"]
 
-            for item in function_calls:
+            for call_index, item in enumerate(function_calls, start=1):
                 args = json.loads(item.arguments)
                 query, reason = args["query"], args.get("reason", "")
-                emit({"type": "search", "iteration": iteration, "query": query, "reason": reason})
+                emit({"type": "search", "iteration": iteration, "query": query, "reason": reason,
+                     "call_index": call_index, "calls_this_iteration": len(function_calls)})
 
                 hits = self._search(query)
                 for hit in hits:

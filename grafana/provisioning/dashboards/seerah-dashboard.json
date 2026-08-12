@@ -1,0 +1,305 @@
+{
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "\n            SELECT created_at AS time, question, answer, response_time, cost\n            FROM conversations\n            WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n            ORDER BY created_at DESC LIMIT 5\n        ",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent Conversations",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {},
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "\n            SELECT model, COUNT(*) as count FROM conversations\n            WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n            GROUP BY model\n        ",
+          "refId": "A"
+        }
+      ],
+      "title": "Model Usage",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 3,
+      "options": {},
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "\n            SELECT\n              SUM(CASE WHEN score > 0 THEN 1 ELSE 0 END) as thumbs_up,\n              SUM(CASE WHEN score < 0 THEN 1 ELSE 0 END) as thumbs_down\n            FROM feedback\n            WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n        ",
+          "refId": "A"
+        }
+      ],
+      "title": "User Feedback",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 16
+      },
+      "id": 4,
+      "options": {},
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "\n            SELECT created_at AS time, response_time\n            FROM conversations\n            WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n            ORDER BY created_at\n        ",
+          "refId": "A"
+        }
+      ],
+      "title": "Response Time (seconds)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 16
+      },
+      "id": 5,
+      "options": {},
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "\n            SELECT $__timeGroup(created_at, $__interval) AS time, AVG(total_tokens) as avg_tokens\n            FROM conversations\n            WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n            GROUP BY 1 ORDER BY 1\n        ",
+          "refId": "A"
+        }
+      ],
+      "title": "Avg Token Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 16
+      },
+      "id": 6,
+      "options": {},
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "\n            SELECT $__timeGroup(created_at, $__interval) AS time, SUM(cost) as total_cost\n            FROM conversations\n            WHERE created_at BETWEEN $__timeFrom() AND $__timeTo() AND cost > 0\n            GROUP BY 1 ORDER BY 1\n        ",
+          "refId": "A"
+        }
+      ],
+      "title": "Cost (USD)",
+      "type": "timeseries"
+    },
+    {
+      "id": 7,
+      "title": "Avg Response Time",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 24
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "\n                SELECT AVG(response_time) as avg_response_time\n                FROM conversations\n                WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n            "
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Total Cost (all time)",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 24
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 4
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT SUM(cost) as total_cost FROM conversations"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "seerah"
+  ],
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Seerah AI - Ops Dashboard",
+  "uid": "seerah-ops",
+  "version": 3
+}

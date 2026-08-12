@@ -1,0 +1,22 @@
+# Auto-registers Postgres as a Grafana data source on container startup - no
+# manual "Add data source" click-through needed on a fresh `docker-compose up`.
+# uid is fixed (not auto-generated) so the checked-in dashboard JSON can
+# reference this exact data source reliably across rebuilds.
+apiVersion: 1
+
+datasources:
+  - name: Seerah Postgres
+    uid: seerah_postgres
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    database: seerah
+    user: seerah
+    isDefault: true
+    editable: false
+    jsonData:
+      database: seerah
+      sslmode: disable
+      postgresVersion: 1600
+    secureJsonData:
+      password: seerah

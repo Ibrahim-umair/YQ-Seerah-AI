@@ -4,7 +4,61 @@ import "./App.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const suggestions = ["The first revelation", "Hijrah to Madinah", "Battle of Badr", "Life in Makkah"];
+// Grounded in the corpus's actual lecture titles (data/chunks_contextual.json),
+// not invented - specific, incident-level prompts retrieve a much narrower,
+// more precise set of chunks than a vague topic like "Life in Makkah" does.
+const categories = [
+  {
+    name: "Before Revelation",
+    prompts: [
+      "What happened during the Year of the Elephant?",
+      "Who was Halimah and what was her role in the Prophet's early childhood?",
+      "What is the story of the rebuilding of the Ka'bah before Islam?",
+      "What was the Hilf al-Fudul, the Pact of the Virtuous?",
+      "How did the Prophet meet and marry Khadijah?",
+    ],
+  },
+  {
+    name: "The Meccan Period",
+    prompts: [
+      "What happened during the first revelation in the Cave of Hira?",
+      "What was the Incident of the Satanic Verses?",
+      "Why did some Muslims migrate to Abyssinia?",
+      "What happened to the Prophet during the Incident of Ta'if?",
+      "What happened during the Night Journey and Ascension to the Heavens?",
+    ],
+  },
+  {
+    name: "The Hijrah",
+    prompts: [
+      "What happened during the Hijrah, the emigration to Madinah?",
+      "What happened in the Cave of Thawr during the Hijrah?",
+      "What was the Covenant of the Women at Aqabah?",
+      "How did the early emigrants settle in Madinah before the Prophet arrived?",
+      "What lessons are drawn from the Hijrah and the blessings of Madinah?",
+    ],
+  },
+  {
+    name: "Early Madinan Period",
+    prompts: [
+      "What was the Constitution of Madinah?",
+      "What happened at the Battle of Badr?",
+      "What happened to Ka'b ibn al-Ashraf and why was he assassinated?",
+      "What happened at the Battle of Uhud?",
+      "What happened to the tribe of Banu Qurayza after the Battle of the Trench?",
+    ],
+  },
+  {
+    name: "Treaties, Conquest & Final Years",
+    prompts: [
+      "What were the terms of the Treaty of Hudaybiyyah?",
+      "What happened during the Conquest of Makkah?",
+      "What happened at the Battle of Hunayn?",
+      "What happened during the Farewell Hajj?",
+      "How did the Prophet Muhammad die?",
+    ],
+  },
+];
 
 function getVideoId(youtubeUrl) {
   try {
@@ -19,6 +73,15 @@ function ArrowIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="12" y1="19" x2="12" y2="5" />
       <polyline points="5 12 12 5 19 12" />
+    </svg>
+  );
+}
+
+function BackIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12" />
+      <polyline points="12 19 5 12 12 5" />
     </svg>
   );
 }
@@ -42,6 +105,7 @@ export default function App() {
   const [previousResponseId, setPreviousResponseId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const pendingRef = useRef(null);
 
   useEffect(() => {
@@ -85,6 +149,7 @@ export default function App() {
     setPreviousResponseId(null);
     setQuery("");
     setError(null);
+    setSelectedCategory(null);
   }
 
   function toggleSources(turnId) {
@@ -133,10 +198,32 @@ export default function App() {
 
           {!hasConversation && (
             <div className="suggestions">
-              <span>Try asking about:</span>
-              <div>
-                {suggestions.map((item) => <button key={item} type="button" onClick={() => setQuery(item)}>{item}</button>)}
-              </div>
+              {!selectedCategory ? (
+                <>
+                  <span>Explore by period:</span>
+                  <div>
+                    {categories.map((cat) => (
+                      <button key={cat.name} type="button" onClick={() => setSelectedCategory(cat.name)}>
+                        {cat.name}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="category-label">
+                    <button type="button" className="back-icon-btn" aria-label="Back to categories" onClick={() => setSelectedCategory(null)}>
+                      <BackIcon />
+                    </button>
+                    {selectedCategory}
+                  </span>
+                  <div>
+                    {categories.find((c) => c.name === selectedCategory).prompts.map((item) => (
+                      <button key={item} type="button" onClick={() => setQuery(item)}>{item}</button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </section>

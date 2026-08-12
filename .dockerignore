@@ -1,0 +1,14 @@
+.git
+.venv
+__pycache__
+*.pyc
+frontend/
+data/
+!data/chunks_contextual.json
+qdrant_storage/
+postgres_storage/
+grafana/
+.claude/
+docs/
+pilot_evaluation/
+dropped_manual_question_workflow/

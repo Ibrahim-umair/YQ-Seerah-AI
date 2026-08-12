@@ -63,7 +63,11 @@ def render_query_diff(prev_query, curr_query):
 def make_on_event(console, prev_query_holder):
     def on_event(event):
         if event["type"] == "search":
-            console.print(f"\n[bold cyan]Search {event['iteration']}[/bold cyan]"
+            label = str(event["iteration"])
+            if event.get("calls_this_iteration", 1) > 1:
+                # model made multiple search calls in the same turn - "2a", "2b", ...
+                label += chr(ord("a") + event["call_index"] - 1)
+            console.print(f"\n[bold cyan]Search {label}[/bold cyan]"
                           f"  [dim italic]thinking: {event['reason']}[/dim italic]")
             if prev_query_holder[0] is not None:
                 console.print("  query: ", render_query_diff(prev_query_holder[0], event["query"]))

@@ -31,7 +31,7 @@ Two changes make this class of bug impossible now. Stage 2's cache is keyed on a
 
 ---
 
-## Retrieval Evaluation (in progress)
+## Retrieval Evaluation: the 10-lecture pilot
 
 The core evaluation of this project: does adding LLM-generated contextual summaries to chunks (Anthropic's "Contextual Retrieval" technique) actually improve retrieval, measured against real questions with known correct answers.
 
@@ -153,6 +153,49 @@ The 233 questions that already passed on the simple pipeline were not individual
 
 ---
 
+## Application interface
+
+**Backend** (`seerah/api.py`, FastAPI): wraps `SeerahAgent` behind three routes.
+
+| Route | Purpose |
+|---|---|
+| `GET /health` | liveness check |
+| `POST /ask` | `{question, previous_response_id?}` → `{id, answer, sources, response_id}` |
+| `POST /feedback/{id}` | `{score: 1 \| -1}` — thumbs up/down on a specific answer |
+
+Multi-turn conversation needs no manually-reconstructed message history: `previous_response_id` (returned from the prior `/ask`) is handed to OpenAI's Responses API, which resumes that conversation's full state server-side — including its own prior tool calls, not just the visible text. Every call is logged to Postgres (see Monitoring below) with token counts, cost, and latency.
+
+**Frontend** (`frontend/`, React + Vite): a chat-style UI over that API — ask a question, get an answer with clickable sources (each linking to the exact lecture *and timestamp* via `&t=<seconds>s`), rate it 👍/👎, keep asking follow-ups in the same thread or start fresh with "Clear chat." Multi-turn is handled client-side by holding onto the last `response_id` and passing it on the next request; nothing persists across a page reload by design — no accounts, no server-side session list, deliberately out of scope for a project with no expected concurrent users.
+
+**Running it locally**: first time on a fresh clone, follow "Quick start" below in order (Qdrant needs to be populated *before* the API container starts, or it crash-loops). After that's done once, day-to-day it's just:
+```bash
+docker compose up -d        # backend + Qdrant + Postgres + Grafana
+cd frontend && npm install && npm run dev
+```
+`frontend/.env`'s `VITE_API_URL` must point at wherever the backend is actually reachable (`http://localhost:8000` by default).
+
+**Deployment plan** (not live yet - pending cloud credits): the frontend is a pure static build (`npm run build`), intended for a static host (Vercel) rather than a container — a static SPA has no server-side logic to containerize, so wrapping it in Docker would only ever matter for the local `docker-compose` story, never for actual production. The backend + Qdrant + Postgres run together via the same `docker-compose.yml` on a small VPS once that's set up.
+
+## Monitoring & analytics
+
+Every `/ask` call writes one row to Postgres' `conversations` table (question, answer, sources, search log, model, prompt/completion/total tokens, cost, response time, and the `response_id`/`previous_response_id` pair that reconstructs multi-turn threads); every `/feedback` call writes to `feedback`, linked by `conversation_id`. Schema and helpers live in `seerah/db.py`.
+
+**Grafana** (`docker-compose.yml`'s `grafana` service, config in `grafana/provisioning/`) reads directly from that same Postgres — no separate metrics pipeline. The dashboard is fully provisioned (data source + all panels defined in checked-in YAML/JSON, not built by clicking through the UI), so it reproduces automatically on a fresh `docker-compose up` with zero manual setup — verified by deleting the Grafana container *and* its data volume entirely and confirming everything reappeared correctly from nothing but the compose file.
+
+8 panels: recent conversations (table), model usage (bar), user feedback (pie), response time / avg token usage / cost (time series), plus avg response time and total cost as single-number stat panels.
+
+Access at `http://localhost:3000` (`admin`/`admin`). **Deliberately never exposed publicly** — it shows internal metrics (cost, question volume, raw feedback) that have no reason to be public, so it stays local-only even once the app itself is deployed.
+
+## Containerization
+
+`docker-compose.yml` runs 4 services: `app` (the FastAPI backend, built from the root `Dockerfile`), `qdrant`, `postgres`, `grafana`. One command, `docker-compose up -d`, brings up the entire backend stack.
+
+The `Dockerfile` builds the BM25 index *at image-build time* (from the committed `data/chunks_contextual.json`) rather than depending on `data/bm25_index/` (gitignored) already existing on whatever machine runs `docker build` — so the image is self-contained on a completely fresh clone. It does **not** run the embedding step (`seerah.ingest.embed`) — that's a one-time, costly (~$0.28), API-dependent step you run once against a running Qdrant, same as the Quick start below.
+
+The frontend is intentionally not part of this compose file — see "Application interface" above for why.
+
+---
+
 ## Running the pipeline
 
 ### Quick start
@@ -161,14 +204,22 @@ The expensive artifacts are committed, so getting a working system does **not** 
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env          # then put your OPENAI_API_KEY in it
-docker compose up -d          # starts Qdrant on localhost:6333
+cp .env.example .env              # then put your OPENAI_API_KEY in it
 
-python -m seerah.ingest.embed # embeds the committed chunks into Qdrant (~$0.28, ~3 min)
-python -m seerah.ingest.bm25  # builds the keyword index (free, seconds)
+docker compose up -d qdrant postgres   # infra first, not the app yet - see note below
+python -m seerah.ingest.embed          # embeds the committed chunks into Qdrant (~$0.28, ~3 min)
+python -m seerah.ingest.bm25           # builds the keyword index on the host (free, seconds) -
+                                        # needed separately for seerah.cli/bot below; the Docker
+                                        # image builds its own copy internally at build time
+python -m seerah.db                    # creates the conversations/feedback tables
 
-python -m seerah.cli          # interactive retrieval over all 104 lectures
+docker compose up -d              # now bring up everything - app, qdrant, postgres, grafana
+python -m seerah.cli               # interactive retrieval over all 104 lectures, or:
+python -m seerah.bot               # interactive agentic Q&A on the host, or:
+curl http://localhost:8000/health  # confirm the containerized API is up
 ```
+
+**Why infra first, then the app**: `seerah/api.py` loads `SeerahAgent` at startup, which immediately checks that the Qdrant collection exists - by design (`seerah/retrieve.py` fails loudly rather than serving from an empty/stale index). Starting `app` before `seerah.ingest.embed` has actually populated Qdrant means it crash-loops (harmlessly - `restart: unless-stopped` keeps retrying) until that step finishes. Running infra and the embedding step first avoids the loop entirely.
 
 With `make` installed, that whole sequence is `make install && make setup && make query`. Run `make help` to list every target.
 
@@ -197,7 +248,7 @@ Stage 2 also has `--dry-run` (`make context-plan`), which reports exactly which 
 
 Committed: `data/seerah_transcripts.jsonl`, `data/chunks_plain.json`, `data/chunks_contextual.json`, `data/chunking_manifest.json`.
 
-Rebuilt locally (gitignored): `data/contextual_cache/`, `data/batch_wave_inputs/`, `data/bm25_index/`, `qdrant_storage/`.
+Rebuilt locally (gitignored): `data/contextual_cache/`, `data/batch_wave_inputs/`, `data/bm25_index/`, `qdrant_storage/`, `postgres_storage/`, the `grafana_data` Docker volume.
 
 ### Repository layout
 
@@ -206,8 +257,18 @@ seerah/                 the application
   config.py             all paths, models and constants in one place
   artifacts.py          artifact read/write helpers
   retrieve.py           vector + BM25 retrieval behind one result type
-  cli.py                interactive query tool
-  ingest/               the four stages above
+  answer.py             SeerahRAG - the simple, single-shot pipeline
+  agent.py              SeerahAgent - the agentic, multi-turn pipeline
+  db.py                 Postgres schema + conversation/feedback logging
+  api.py                FastAPI app: /health, /ask, /feedback
+  bot.py                interactive CLI over the agent (or --simple for SeerahRAG)
+  cli.py                interactive raw-retrieval tool (no generation)
+  ingest/               the four ingestion stages above
+  eval/                 retrieval + LLM-as-judge evaluation tooling
+frontend/               React + Vite chat UI over the API
+grafana/provisioning/   dashboard + data source, auto-loaded on container start
 data/                   dataset and pipeline artifacts
 pilot_evaluation/       the 10-lecture retrieval experiment (frozen evidence)
+Dockerfile              backend API image (see Containerization above)
+docker-compose.yml      app + qdrant + postgres + grafana
 ```

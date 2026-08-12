@@ -1,4 +1,23 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: seerah_app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Override the .env's host-side defaults - inside the compose network,
+      # containers reach each other by service name, not localhost.
+      - POSTGRES_HOST=postgres
+      - QDRANT_URL=http://qdrant:6333
+    depends_on:
+      - postgres
+      - qdrant
+    restart: unless-stopped
+
   qdrant:
     image: qdrant/qdrant:latest
     container_name: seerah_qdrant
@@ -21,3 +40,21 @@ services:
     volumes:
       - ./postgres_storage:/var/lib/postgresql/data
     restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: seerah_grafana
+    # Private ops dashboard only - deliberately never exposed publicly, see README.
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  grafana_data:

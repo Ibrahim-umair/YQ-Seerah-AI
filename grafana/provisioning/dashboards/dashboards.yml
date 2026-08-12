@@ -1,0 +1,10 @@
+# Auto-loads any dashboard JSON dropped in this same folder on startup.
+apiVersion: 1
+
+providers:
+  - name: Seerah dashboards
+    folder: ""
+    type: file
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards
