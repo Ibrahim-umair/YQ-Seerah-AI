@@ -122,6 +122,20 @@ export default function App() {
     setLoading(true);
     setError(null);
 
+    // Set once the first "token" event arrives, so a "done" event that
+    // shows up with no tokens before it (the rare case where the model
+    // produces no streamed text at all) still creates the turn itself.
+    let started = false;
+
+    function appendToLastTurn(patch) {
+      setTurns((prev) => {
+        const next = [...prev];
+        const last = next.length - 1;
+        next[last] = typeof patch === "function" ? patch(next[last]) : { ...next[last], ...patch };
+        return next;
+      });
+    }
+
     try {
       const res = await fetch(`${API_URL}/ask`, {
         method: "POST",
@@ -129,13 +143,54 @@ export default function App() {
         body: JSON.stringify({ question, previous_response_id: previousResponseId }),
       });
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
-      const data = await res.json();
 
-      setTurns((prev) => [
-        ...prev,
-        { id: data.id, question, answer: data.answer, sources: data.sources, feedback: null, showAllSources: false },
-      ]);
-      setPreviousResponseId(data.response_id);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const events = buffer.split("\n\n");
+        buffer = events.pop(); // last piece may be an incomplete event - keep it for next read
+
+        for (const raw of events) {
+          if (!raw.startsWith("data: ")) continue;
+          const evt = JSON.parse(raw.slice(6));
+
+          if (evt.type === "token") {
+            if (!started) {
+              started = true;
+              setPendingQuestion(null);
+              setLoading(false);
+              setTurns((prev) => [
+                ...prev,
+                { id: crypto.randomUUID(), dbId: null, question, answer: evt.text,
+                  sources: [], feedback: null, feedbackError: false, showAllSources: false, done: false },
+              ]);
+            } else {
+              appendToLastTurn((t) => ({ ...t, answer: t.answer + evt.text }));
+            }
+          } else if (evt.type === "done") {
+            if (!started) {
+              setPendingQuestion(null);
+              setLoading(false);
+              setTurns((prev) => [
+                ...prev,
+                { id: crypto.randomUUID(), dbId: evt.id, question, answer: evt.answer,
+                  sources: evt.sources, feedback: null, feedbackError: false, showAllSources: false, done: true },
+              ]);
+            } else {
+              appendToLastTurn({ dbId: evt.id, sources: evt.sources, done: true });
+            }
+            setPreviousResponseId(evt.response_id);
+          } else if (evt.type === "error") {
+            throw new Error(evt.message);
+          }
+        }
+      }
     } catch {
       setError("Something went wrong reaching the Seerah AI - please try again.");
     } finally {
@@ -156,10 +211,10 @@ export default function App() {
     setTurns((prev) => prev.map((t) => (t.id === turnId ? { ...t, showAllSources: !t.showAllSources } : t)));
   }
 
-  async function sendFeedback(turnId, score) {
+  async function sendFeedback(turnId, dbId, score) {
     setTurns((prev) => prev.map((t) => (t.id === turnId ? { ...t, feedbackError: false } : t)));
     try {
-      const res = await fetch(`${API_URL}/feedback/${turnId}`, {
+      const res = await fetch(`${API_URL}/feedback/${dbId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ score }),
@@ -248,22 +303,24 @@ export default function App() {
                       <div className="answer-content">
                         <ReactMarkdown>{turn.answer}</ReactMarkdown>
                       </div>
-                      <div className="feedback">
-                        Was this helpful?
-                        <button
-                          className={turn.feedback === 1 ? "selected" : ""}
-                          disabled={turn.feedback !== null}
-                          onClick={() => sendFeedback(turn.id, 1)}
-                          aria-label="Helpful"
-                        >👍</button>
-                        <button
-                          className={turn.feedback === -1 ? "selected" : ""}
-                          disabled={turn.feedback !== null}
-                          onClick={() => sendFeedback(turn.id, -1)}
-                          aria-label="Not helpful"
-                        >👎</button>
-                        {turn.feedbackError && <small className="feedback-error">couldn't save, try again</small>}
-                      </div>
+                      {turn.done && (
+                        <div className="feedback">
+                          Was this helpful?
+                          <button
+                            className={turn.feedback === 1 ? "selected" : ""}
+                            disabled={turn.feedback !== null}
+                            onClick={() => sendFeedback(turn.id, turn.dbId, 1)}
+                            aria-label="Helpful"
+                          >👍</button>
+                          <button
+                            className={turn.feedback === -1 ? "selected" : ""}
+                            disabled={turn.feedback !== null}
+                            onClick={() => sendFeedback(turn.id, turn.dbId, -1)}
+                            aria-label="Not helpful"
+                          >👎</button>
+                          {turn.feedbackError && <small className="feedback-error">couldn't save, try again</small>}
+                        </div>
+                      )}
                     </article>
                   </div>
 
