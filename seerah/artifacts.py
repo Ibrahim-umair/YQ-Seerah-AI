@@ -41,6 +41,22 @@ def read_chunks(path):
     raise ValueError(f"{path} has no recognisable chunk list (keys: {list(payload)})")
 
 
+def load_sentence_timestamps(path):
+    """Returns {(lecture_number, chunk_index): sentences} from the
+    with-timestamps chunk artifact, or {} if that file doesn't exist.
+
+    This is an optional enrichment layer on top of the main contextual
+    chunks (same text/summary, plus each chunk's transcript sentences
+    individually timestamped) - callers (embed.py, bm25.py) should treat a
+    missing file as "no sentence-level timing available" and degrade
+    gracefully (citation refinement then falls back to chunk-start
+    timestamps only), not as an error."""
+    if not path.exists():
+        return {}
+    chunks = read_chunks(path)
+    return {(c["lecture_number"], c["chunk_index"]): c.get("sentences", []) for c in chunks}
+
+
 def load_lectures(transcripts_path):
     lectures = []
     with open(transcripts_path, encoding="utf-8") as f:

@@ -5,6 +5,7 @@ either. Both retrievers return the same result shape, so callers (the CLI now,
 the web app later) don't need to care which one produced a hit.
 """
 
+import json
 import time
 from dataclasses import dataclass
 
@@ -27,6 +28,7 @@ class Hit:
     text: str
     start_timestamp: str = ""
     start_timestamp_seconds: float = 0.0
+    sentences: list = None
 
     @property
     def citation(self):
@@ -46,10 +48,11 @@ class Retriever:
     """Holds the loaded indexes. Construct once, query many times - loading the
     BM25 index costs a couple of seconds and shouldn't happen per query."""
 
-    def __init__(self, load_bm25=True, load_vector=True):
+    def __init__(self, load_bm25=True, load_vector=True, load_chunk_lookup=True):
         self.openai = OpenAI() if load_vector else None
         self.qdrant = None
         self.bm25 = None
+        self._chunk_lookup = None
 
         if load_vector:
             self.qdrant = QdrantClient(url=config.QDRANT_URL, timeout=30)
@@ -67,6 +70,41 @@ class Retriever:
                     f"Build it with `python -m seerah.ingest.bm25`."
                 )
             self.bm25 = BM25Retriever.from_persist_dir(str(config.BM25_DIR))
+
+        if load_chunk_lookup:
+            path = config.CONTEXTUAL_CHUNKS_WITH_TIMESTAMPS_PATH
+            if path.exists():
+                with open(path, encoding="utf-8") as f:
+                    chunks = json.load(f)["chunks"]
+                self._chunk_lookup = {(c["lecture_number"], c["chunk_index"]): c for c in chunks}
+
+    def get_predecessor(self, hit):
+        """The chunk immediately before `hit` in the same lecture (chunk_index
+        - 1), as a Hit - used only to look slightly earlier than a retrieved
+        chunk's own start when refining a citation's timestamp, since a chunk
+        can open mid-story even though it never opens mid-sentence (chunking
+        respects sentence boundaries, not narrative ones).
+
+        Returns None if `hit` is a lecture's first chunk, or if the
+        with-timestamps chunk file isn't available (load_chunk_lookup=False,
+        or the file is missing - callers should treat that as "no predecessor
+        available" rather than an error, same as chunk_index == 0)."""
+        if self._chunk_lookup is None or hit.chunk_index == 0:
+            return None
+        chunk = self._chunk_lookup.get((hit.lecture_number, hit.chunk_index - 1))
+        if chunk is None:
+            return None
+        return Hit(
+            score=0.0,
+            lecture_number=chunk["lecture_number"],
+            canonical_title=chunk["canonical_title"],
+            youtube_url=chunk["youtube_url"],
+            chunk_index=chunk["chunk_index"],
+            text=chunk["text"],
+            start_timestamp=chunk.get("start_timestamp", ""),
+            start_timestamp_seconds=chunk.get("start_timestamp_seconds", 0.0),
+            sentences=chunk.get("sentences") or [],
+        )
 
     def embed_query(self, query):
         response = self.openai.embeddings.create(model=config.EMBEDDING_MODEL, input=[query])
@@ -97,6 +135,7 @@ class Retriever:
                 text=p.payload["text"],
                 start_timestamp=p.payload.get("start_timestamp", ""),
                 start_timestamp_seconds=p.payload.get("start_timestamp_seconds", 0.0),
+                sentences=p.payload.get("sentences") or [],
             )
             for p in response.points
         ]
@@ -119,6 +158,7 @@ class Retriever:
                 text=n.get_content(),
                 start_timestamp=n.metadata.get("start_timestamp", ""),
                 start_timestamp_seconds=n.metadata.get("start_timestamp_seconds", 0.0),
+                sentences=n.metadata.get("sentences") or [],
             )
             for n in nodes
         ]
@@ -181,6 +221,7 @@ def reciprocal_rank_fusion(result_lists, k, top_k):
             text=representative[key].text,
             start_timestamp=representative[key].start_timestamp,
             start_timestamp_seconds=representative[key].start_timestamp_seconds,
+            sentences=representative[key].sentences,
         )
         for key in ranked_keys
     ]

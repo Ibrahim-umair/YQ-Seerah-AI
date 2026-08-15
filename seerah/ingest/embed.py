@@ -8,6 +8,15 @@ one stage a reviewer cloning the repo actually has to run, because the vector
 store itself is too large to commit - everything upstream of it is already in
 the repository as a committed artifact.
 
+If data/chunks_contextual_with_timestamps.json is present (same chunks, plus
+each one's transcript sentences individually timestamped), each point's
+payload also gets a 'sentences' field - used only by SeerahAgent's citation
+refinement pass to report a precise in-lecture moment instead of just the
+chunk's own start. Embedding itself is unaffected either way: it's still
+computed from 'text' alone, so this file's presence never changes what gets
+embedded or costs anything extra. Missing that file degrades gracefully -
+citation refinement just falls back to chunk-start timestamps.
+
 Requires Qdrant to be running:  docker compose up -d
 
 Embedding model is OpenAI text-embedding-3-large. It beat a local BGE-M3 setup
@@ -92,7 +101,7 @@ def verify(qdrant, chunks):
     return True
 
 
-def build(qdrant, chunks):
+def build(qdrant, chunks, sentence_lookup):
     if qdrant.collection_exists(config.COLLECTION_NAME):
         print(f"  collection '{config.COLLECTION_NAME}' exists - deleting and rebuilding")
         qdrant.delete_collection(config.COLLECTION_NAME)
@@ -123,6 +132,7 @@ def build(qdrant, chunks):
                         "text": c["text"],
                         "start_timestamp": c.get("start_timestamp", ""),
                         "start_timestamp_seconds": c.get("start_timestamp_seconds", 0.0),
+                        "sentences": sentence_lookup.get((c["lecture_number"], c["chunk_index"]), []),
                     },
                 )
                 for i, c in enumerate(batch)
@@ -151,8 +161,17 @@ def main():
         print("Collection is already complete and healthy - nothing to do. Pass --force to rebuild.")
         return
 
+    sentence_lookup = artifacts.load_sentence_timestamps(config.CONTEXTUAL_CHUNKS_WITH_TIMESTAMPS_PATH)
+    if sentence_lookup:
+        print(f"  found {config.CONTEXTUAL_CHUNKS_WITH_TIMESTAMPS_PATH.name} - "
+              f"embedding with sentence-level timestamps included")
+    else:
+        print(f"  {config.CONTEXTUAL_CHUNKS_WITH_TIMESTAMPS_PATH.name} not found - "
+              f"embedding without sentence-level timestamps (citation refinement "
+              f"will fall back to chunk-start timestamps only)")
+
     print(f"Embedding {len(chunks)} chunks with {config.EMBEDDING_MODEL}...")
-    build(qdrant, chunks)
+    build(qdrant, chunks, sentence_lookup)
     verify(qdrant, chunks)
 
 

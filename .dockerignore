@@ -5,6 +5,7 @@ __pycache__
 frontend/
 data/
 !data/chunks_contextual.json
+!data/chunks_contextual_with_timestamps.json
 qdrant_storage/
 postgres_storage/
 grafana/

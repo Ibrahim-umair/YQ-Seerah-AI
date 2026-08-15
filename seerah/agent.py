@@ -107,6 +107,8 @@ Every time you call search, also give a one-sentence `reason` explaining why
 you are performing this search - or, on a later call, what you changed since
 the previous one and why.
 
+Cite lectures inline as [Lecture N].
+
 If, after your searches, the evidence still does not answer the question,
 say so plainly rather than guessing.
 """.strip()
@@ -138,6 +140,21 @@ SEARCH_TOOL = {
 }
 
 
+def render_hit_text(hit):
+    """The text shown to the model for a hit: the contextual summary (if any)
+    unprefixed, then the raw transcript with each sentence prefixed by its
+    [HH:MM:SS] marker - so the model can cite the exact moment a specific
+    claim comes from, not just the whole chunk's start. Untouched, unmarked
+    hit.text if no sentence-level timing is available for this chunk (older
+    data, or a chunk that genuinely has none)."""
+    if not hit.sentences:
+        return hit.text
+    split_at = hit.text.find("\n\n")
+    prefix = hit.text[:split_at + 2] if split_at != -1 else ""
+    annotated = " ".join(f"[{s['start_timestamp']}] {s['text']}" for s in hit.sentences)
+    return prefix + annotated
+
+
 def hit_to_dict(hit):
     return {
         "lecture": hit.citation,
@@ -145,6 +162,58 @@ def hit_to_dict(hit):
         "score": round(hit.score, 4),
         "text": hit.text,
     }
+
+
+CITATION_INSTRUCTIONS = """
+You already answered a question using evidence from several passages. Now,
+looking only at the QUESTION, your ANSWER, and the PASSAGES below, identify
+the exact timestamp(s) that best support what your answer actually says.
+
+Each passage's transcript sentences are individually marked with their exact
+moment in the video, like this: [00:14:46] This sentence. [00:14:48] The
+next one. A passage may be preceded by a separate one labeled "(the moment
+immediately before this passage)" - that exists only so you can pick an
+earlier, more accurate starting point if the real start of what your answer
+describes actually falls there rather than in the retrieved passage itself.
+
+If your answer describes an incident or exchange (someone does or says
+something, an event unfolds), cite the moment it BEGINS - not a later
+moment that continues it, elaborates on it, or responds to it, even if that
+later moment also genuinely relates to your answer. Check the "(the moment
+immediately before this passage)" text specifically for this: if the
+incident's actual start is there rather than in the retrieved passage, cite
+that earlier moment instead of settling for wherever the retrieved passage
+happens to begin.
+
+Return between 1 and 3 citations. Each is a lecture number and one exact
+[HH:MM:SS] marker - copied exactly as it appears below, never computed,
+rounded, or invented - for the specific sentence that backs a specific claim
+in your answer. If every claim in your answer comes from one lecture, return
+just that one citation. Only return citations from more than one lecture if
+your answer genuinely draws on distinct lectures for different parts of what
+it says - do not pad the list with a second citation from the same lecture
+just to reach a higher count.
+""".strip()
+
+CITATION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "citations": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "lecture_number": {"type": "integer"},
+                    "timestamp": {"type": "string", "description": "HH:MM:SS, copied exactly from a passage above"},
+                },
+                "required": ["lecture_number", "timestamp"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    "required": ["citations"],
+    "additionalProperties": False,
+}
 
 
 class SeerahAgent:
@@ -177,6 +246,135 @@ class SeerahAgent:
     def _search(self, query):
         hits, _timings = self.retriever.hybrid_search(query, top_k=self.search_top_k)
         return hits
+
+    def _refine_citations(self, question, answer, all_hits):
+        """A dedicated pass AFTER the answer is written: given the question,
+        the answer, and a small, FIXED-size set of passages - the top
+        config.CITATION_REFINE_TOP_K highest-scoring hits, each paired with
+        its predecessor chunk (the moment right before it in the same
+        lecture, in case the real start of what the answer describes was cut
+        off by a chunk boundary) - asks the model to point at the specific
+        [HH:MM:SS] marker(s) that actually support what the answer says.
+
+        Deliberately a SEPARATE call from ask()/ask_stream()'s main loop, not
+        folded into the same generation: the main loop's job is to write a
+        good answer; this one's job is narrower - given that finished
+        answer, which exact moments back it up. Keeping the context fixed at
+        CITATION_REFINE_TOP_K hits (not however many a multi-search question
+        happened to retrieve, which can be 5 to ~30) means this call's
+        difficulty never scales with how much searching happened.
+
+        Uses Structured Outputs (a JSON schema, strict mode) rather than a
+        citation format embedded in free text, so there's no format for a
+        parser to miss - the model can only return a clean list of
+        {lecture_number, timestamp} pairs.
+
+        Returns (citations, primary_keys, tokens, extra_hits):
+          - citations: [{"lecture_number", "claimed_timestamp", "valid"}, ...]
+            - one per citation the model returned. A citation is only
+            "valid" if its exact timestamp genuinely appears in the
+            sentences of one of the passages shown - hallucinated, rounded,
+            or mismatched timestamps are simply dropped, never applied.
+          - primary_keys: [(lecture_number, chunk_index), ...] - one entry
+            per DISTINCT lecture among the valid citations, in the order the
+            model gave them, pointing at whichever CHUNK actually contains
+            the cited sentence - the retrieved chunk itself, or its
+            predecessor if that's where the real match was found (a
+            predecessor match promotes that chunk as its own distinct
+            citation, it never overwrites the timestamp of the different
+            chunk it happened to be fetched alongside). Callers use this to
+            move these hits to the front of the returned hit list: one entry
+            means every claim traced back to a single lecture, so only that
+            hit becomes primary; several entries means the answer genuinely
+            draws on multiple lectures, so those are surfaced too (as "more
+            sources", using the UI that already exists for that) instead of
+            hiding behind whichever chunk merely scored highest in retrieval.
+          - tokens: (prompt_tokens, completion_tokens, cached_tokens) for
+            this call, to fold into the overall usage/cost total.
+          - extra_hits: {(lecture_number, chunk_index): Hit} for any
+            predecessor chunk that turned out to be a real citation target -
+            these aren't in all_hits (they were never actually retrieved by
+            a search), so the caller must merge them in before using
+            primary_keys to reorder hits.
+        """
+        top_hits = sorted(all_hits.values(), key=lambda h: h.score, reverse=True)[:config.CITATION_REFINE_TOP_K]
+        if not top_hits:
+            return [], [], (0, 0, 0), {}
+
+        # get_predecessor() always builds a fresh Hit from the chunk file - if that
+        # exact chunk is ALSO already in all_hits (genuinely retrieved, just not in
+        # the top CITATION_REFINE_TOP_K), reuse THAT object instead of the fresh
+        # one, so a citation matching it mutates the one object everything else
+        # will actually look up later, rather than a throwaway duplicate.
+        predecessors = {}
+        for h in top_hits:
+            predecessor = self.retriever.get_predecessor(h)
+            if predecessor is not None:
+                predecessor = all_hits.get((predecessor.lecture_number, predecessor.chunk_index), predecessor)
+            predecessors[(h.lecture_number, h.chunk_index)] = predecessor
+
+        blocks = []
+        for i, hit in enumerate(top_hits, start=1):
+            predecessor = predecessors[(hit.lecture_number, hit.chunk_index)]
+            if predecessor is not None:
+                blocks.append(f"--- Passage {i}, {hit.citation} (the moment immediately before this passage) ---\n"
+                              f"{render_hit_text(predecessor)}")
+            blocks.append(f"--- Passage {i}, {hit.citation} ---\n{render_hit_text(hit)}")
+
+        prompt = f"{CITATION_INSTRUCTIONS}\n\nQUESTION: {question}\n\nANSWER: {answer}\n\n" + "\n\n".join(blocks)
+
+        response = self.llm_client.responses.create(
+            model=self.model, input=prompt,
+            text={"format": {"type": "json_schema", "name": "citations", "schema": CITATION_SCHEMA, "strict": True}},
+        )
+        tokens = (response.usage.input_tokens, response.usage.output_tokens,
+                 getattr(response.usage.input_tokens_details, "cached_tokens", 0) or 0)
+
+        try:
+            raw_citations = json.loads(response.output_text).get("citations", [])[:3]
+        except (json.JSONDecodeError, AttributeError, TypeError):
+            raw_citations = []
+
+        # Every chunk actually shown to the model this call, each independently
+        # citable in its own right - a retrieved hit AND its predecessor are
+        # two distinct chunks with two distinct identities, never conflated.
+        candidates = {}
+        for hit in top_hits:
+            candidates[(hit.lecture_number, hit.chunk_index)] = hit
+            predecessor = predecessors[(hit.lecture_number, hit.chunk_index)]
+            if predecessor is not None:
+                candidates.setdefault((predecessor.lecture_number, predecessor.chunk_index), predecessor)
+
+        results = []
+        primary_keys = []
+        assigned_keys = set()  # a chunk's own timestamp is set once, by the FIRST citation that matches it -
+                                # never overwritten by a later, different citation matching that same chunk
+        seen_lectures = set()
+        for c in raw_citations:
+            lecture_number, claimed = c.get("lecture_number"), c.get("timestamp")
+            valid, matched_key = False, None
+            for key, candidate in candidates.items():
+                if candidate.lecture_number != lecture_number:
+                    continue
+                for sentence in candidate.sentences or []:
+                    if sentence["start_timestamp"] == claimed:
+                        valid, matched_key = True, key
+                        if key not in assigned_keys:
+                            candidate.start_timestamp = sentence["start_timestamp"]
+                            candidate.start_timestamp_seconds = sentence["start_timestamp_seconds"]
+                            assigned_keys.add(key)
+                        break
+                if valid:
+                    break
+            results.append({"lecture_number": lecture_number, "claimed_timestamp": claimed, "valid": valid})
+            if valid and lecture_number not in seen_lectures:
+                seen_lectures.add(lecture_number)
+                primary_keys.append(matched_key)
+
+        extra_hits = {k: v for k, v in candidates.items() if k not in all_hits and k in assigned_keys}
+        return results, primary_keys, tokens, extra_hits
+
+        return results, primary_keys, tokens
 
     def ask(self, question, on_event=None, previous_response_id=None):
         """Runs the agentic loop.
@@ -282,6 +480,13 @@ class SeerahAgent:
                 "I don't have enough information in the lectures to answer that."
             )
 
+        citation_timestamps, primary_keys, citation_tokens, extra_hits = self._refine_citations(
+            question, final_answer, all_hits)
+        all_hits.update(extra_hits)  # a predecessor chunk that turned out to be the real citation target
+        prompt_tokens += citation_tokens[0]
+        completion_tokens += citation_tokens[1]
+        cached_tokens += citation_tokens[2]
+
         usage = {
             "model": self.model,
             "prompt_tokens": prompt_tokens,
@@ -290,5 +495,153 @@ class SeerahAgent:
             "cost": config.summary_cost(self.model, prompt_tokens, completion_tokens, cached_tokens),
             "response_time": time.perf_counter() - start_time,
             "response_id": last_response_id,
+            "citation_timestamps": citation_timestamps,
         }
-        return final_answer, list(all_hits.values()), search_log, usage
+        ordered_hits = [all_hits[k] for k in primary_keys if k in all_hits]
+        ordered_hits += [h for h in sorted(all_hits.values(), key=lambda h: h.score, reverse=True)
+                        if (h.lecture_number, h.chunk_index) not in primary_keys]
+        return final_answer, ordered_hits, search_log, usage
+
+    def ask_stream(self, question, previous_response_id=None):
+        """Streaming counterpart to ask(): a generator that yields the final
+        answer's text as it's generated, instead of returning it whole.
+
+        Yields, in order:
+          {"type": "token", "text": "..."}   - a chunk of answer text
+          {"type": "done", "answer": ..., "hits": [...], "search_log": [...],
+           "usage": {...}}                   - exactly once, last - same
+                                                shapes ask() returns, as one dict
+
+        Search iterations aren't streamed - there's no user-facing text to
+        stream while the model is only deciding to call `search` again - so
+        in the normal case only the final iteration ever yields "token"
+        events. If the model ever attaches chat text to a search-continuing
+        turn (rare - the `reason` argument on the search tool call exists
+        precisely so it normally doesn't need to), that text streams too;
+        harmless in practice, since the real answer's tokens simply continue
+        appending right after it in the same bubble.
+
+        The citation-marker artifact strip_control_chars() cleans up can span
+        several delta chunks, so raw deltas are held back as soon as a marker
+        might be starting, and only released once it resolves (stripped) or
+        a generous length cap is hit - a chunk is never yielded mid-marker.
+        """
+        start_time = time.perf_counter()
+        messages = [
+            {"role": "developer", "content": self.instructions},
+            {"role": "user", "content": question},
+        ]
+
+        all_hits = {}
+        search_log = []
+        iteration = 0
+        final_answer = None
+        prompt_tokens = 0
+        completion_tokens = 0
+        cached_tokens = 0
+        last_response_id = None
+
+        def is_marker_char(ch):
+            return unicodedata.category(ch) in ("Co", "Cc")
+
+        while final_answer is None:
+            iteration += 1
+            forced = iteration > self.max_iterations
+            if forced:
+                messages.append({
+                    "role": "user",
+                    "content": f"You have used the maximum of {self.max_iterations} searches. "
+                               f"Answer now with your best answer based on everything found so far.",
+                })
+
+            create_kwargs = {"model": self.model, "input": messages,
+                             "tools": None if forced else [SEARCH_TOOL], "stream": True}
+            if self.temperature is not None:
+                create_kwargs["temperature"] = self.temperature
+            if iteration == 1 and previous_response_id is not None:
+                create_kwargs["previous_response_id"] = previous_response_id
+
+            stream = self.llm_client.responses.create(**create_kwargs)
+            response = None
+            pending = ""
+            marker_active = False
+
+            for event in stream:
+                if event.type == "response.output_text.delta":
+                    pending += event.delta
+                    if not marker_active and any(is_marker_char(c) for c in event.delta):
+                        marker_active = True
+                    if not marker_active:
+                        yield {"type": "token", "text": pending}
+                        pending = ""
+                    else:
+                        cleaned = strip_control_chars(pending)
+                        resolved = bool(cleaned) and not any(is_marker_char(c) for c in cleaned)
+                        if resolved or len(pending) > 300:
+                            yield {"type": "token", "text": cleaned if resolved else strip_control_chars(pending)}
+                            pending = ""
+                            marker_active = False
+                elif event.type in ("response.completed", "response.failed", "response.incomplete"):
+                    response = event.response
+
+            if pending:
+                yield {"type": "token", "text": strip_control_chars(pending)}
+
+            if response is None:
+                raise RuntimeError("Response stream ended without a completed response")
+            if response.status not in ("completed", None):
+                raise RuntimeError(f"Response ended with status '{response.status}'")
+
+            messages.extend(response.output)
+            last_response_id = response.id
+
+            prompt_tokens += response.usage.input_tokens
+            completion_tokens += response.usage.output_tokens
+            cached_tokens += getattr(response.usage.input_tokens_details, "cached_tokens", 0) or 0
+
+            function_calls = [item for item in response.output if item.type == "function_call"]
+            note_texts = [item.content[0].text for item in response.output if item.type == "message"]
+
+            for item in function_calls:
+                args = json.loads(item.arguments)
+                query, reason = args["query"], args.get("reason", "")
+                hits = self._search(query)
+                for hit in hits:
+                    all_hits[(hit.lecture_number, hit.chunk_index)] = hit
+                search_log.append({"iteration": iteration, "query": query, "reason": reason,
+                                   "num_hits": len(hits)})
+                messages.append({
+                    "type": "function_call_output",
+                    "call_id": item.call_id,
+                    "output": json.dumps([hit_to_dict(h) for h in hits], ensure_ascii=False),
+                })
+
+            if function_calls:
+                continue
+
+            final_answer = strip_control_chars(note_texts[0]) if note_texts else (
+                "I don't have enough information in the lectures to answer that."
+            )
+
+        citation_timestamps, primary_keys, citation_tokens, extra_hits = self._refine_citations(
+            question, final_answer, all_hits)
+        all_hits.update(extra_hits)  # a predecessor chunk that turned out to be the real citation target
+        prompt_tokens += citation_tokens[0]
+        completion_tokens += citation_tokens[1]
+        cached_tokens += citation_tokens[2]
+
+        usage = {
+            "model": self.model,
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "total_tokens": prompt_tokens + completion_tokens,
+            "cost": config.summary_cost(self.model, prompt_tokens, completion_tokens, cached_tokens),
+            "response_time": time.perf_counter() - start_time,
+            "response_id": last_response_id,
+            "citation_timestamps": citation_timestamps,
+        }
+        ordered_hits = [all_hits[k] for k in primary_keys if k in all_hits]
+        ordered_hits += [h for h in sorted(all_hits.values(), key=lambda h: h.score, reverse=True)
+                        if (h.lecture_number, h.chunk_index) not in primary_keys]
+        yield {"type": "done", "answer": final_answer, "hits": ordered_hits,
+               "search_log": search_log, "usage": usage}

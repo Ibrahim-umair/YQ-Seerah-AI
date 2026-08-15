@@ -38,3 +38,7 @@ uvicorn[standard]==0.46.0
 
 # --- Conversation/feedback logging (runs via docker-compose.yml) ---
 psycopg[binary]==3.3.4
+
+# --- Rate limiting (protects the /ask endpoint's real OpenAI cost per request) ---
+slowapi==0.1.10
+limits==5.8.0

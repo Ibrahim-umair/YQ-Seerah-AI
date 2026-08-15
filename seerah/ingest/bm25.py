@@ -9,6 +9,12 @@ It indexes exactly the same text the vector store embeds - the contextual
 summary prepended to the chunk - so the two retrievers are compared on equal
 footing rather than on different inputs.
 
+If data/chunks_contextual_with_timestamps.json is present, each node's
+metadata also gets a 'sentences' field (see seerah.ingest.embed for why) -
+purely additional metadata, never part of what gets scored. Missing that
+file degrades gracefully - citation refinement just falls back to
+chunk-start timestamps for any hit BM25 contributes.
+
 Usage:
     python -m seerah.ingest.bm25           # skips if the index already exists
     python -m seerah.ingest.bm25 --force   # rebuild it
@@ -23,7 +29,7 @@ from llama_index.retrievers.bm25 import BM25Retriever
 from seerah import artifacts, config
 
 
-def build(chunks):
+def build(chunks, sentence_lookup):
     nodes = [
         TextNode(
             text=c["text"],
@@ -35,6 +41,7 @@ def build(chunks):
                 "chunk_index": c["chunk_index"],
                 "start_timestamp": c.get("start_timestamp", ""),
                 "start_timestamp_seconds": c.get("start_timestamp_seconds", 0.0),
+                "sentences": sentence_lookup.get((c["lecture_number"], c["chunk_index"]), []),
             },
         )
         for i, c in enumerate(chunks)
@@ -59,8 +66,16 @@ def main():
             return
         shutil.rmtree(config.BM25_DIR)
 
+    sentence_lookup = artifacts.load_sentence_timestamps(config.CONTEXTUAL_CHUNKS_WITH_TIMESTAMPS_PATH)
+    if sentence_lookup:
+        print(f"  found {config.CONTEXTUAL_CHUNKS_WITH_TIMESTAMPS_PATH.name} - "
+              f"indexing with sentence-level timestamps included")
+    else:
+        print(f"  {config.CONTEXTUAL_CHUNKS_WITH_TIMESTAMPS_PATH.name} not found - "
+              f"indexing without sentence-level timestamps")
+
     print(f"Building BM25 index from {len(chunks)} contextual chunks...")
-    count = build(chunks)
+    count = build(chunks, sentence_lookup)
     print(f"Indexed {count} chunks -> {config.BM25_DIR}")
 
 

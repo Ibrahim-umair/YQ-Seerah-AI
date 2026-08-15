@@ -4,58 +4,61 @@ import "./App.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Grounded in the corpus's actual lecture titles (data/chunks_contextual.json),
-// not invented - specific, incident-level prompts retrieve a much narrower,
-// more precise set of chunks than a vague topic like "Life in Makkah" does.
+// Real questions from the eval set (data/eval_questions_raw.json), not
+// invented - each one is grounded in a specific, verified incident rather
+// than a vague topic, so retrieval lands on a narrow, precise set of chunks
+// instead of scattering across everything tagged with a broad theme. Most
+// are single-lecture (T1/T2); a few are deliberately cross-episode (T3),
+// tying two arcs together, since those make for the most compelling prompts.
 const categories = [
   {
     name: "Before Revelation",
     prompts: [
-      "What happened during the Year of the Elephant?",
-      "Who was Halimah and what was her role in the Prophet's early childhood?",
-      "What is the story of the rebuilding of the Ka'bah before Islam?",
-      "What was the Hilf al-Fudul, the Pact of the Virtuous?",
-      "How did the Prophet meet and marry Khadijah?",
+      "The well of Zamzam had been lost for generations. How was it found again, and what trouble did that stir up?",
+      "Something happened while the Prophet was being raised out in the desert that frightened his foster mother into sending him back. What was it?",
+      "A trader from Yemen was cheated out of his money in Mecca and had no clan there to back him. What did he do about it?",
+      "Khadija was wealthy and had turned down plenty of suitors. How did she end up marrying the Prophet?",
+      "The Prophet's grandfather wasn't actually born with the name everyone knows him by. How did he end up with it?",
     ],
   },
   {
     name: "The Meccan Period",
     prompts: [
-      "What happened during the first revelation in the Cave of Hira?",
-      "What was the Incident of the Satanic Verses?",
-      "Why did some Muslims migrate to Abyssinia?",
-      "What happened to the Prophet during the Incident of Ta'if?",
-      "What happened during the Night Journey and Ascension to the Heavens?",
+      "After that first encounter in the cave, nothing more came for a while. What happened during that gap and how did it end?",
+      "When the Negus demanded to know what the Muslim refugees believed about Jesus, what answer did Ja'far give, and how did the king react?",
+      "After the people of Ta'if drove the Prophet out, he was offered the chance to have them destroyed. Who made the offer and what did he say?",
+      "On the night journey the Prophet was offered a choice between two drinks. Which did he take, and what was he told about his choice?",
+      "Was the king of Abyssinia already a Muslim when he gave the emigrants refuge, or did that come later?",
     ],
   },
   {
     name: "The Hijrah",
     prompts: [
-      "What happened during the Hijrah, the emigration to Madinah?",
-      "What happened in the Cave of Thawr during the Hijrah?",
-      "What was the Covenant of the Women at Aqabah?",
-      "How did the early emigrants settle in Madinah before the Prophet arrived?",
-      "What lessons are drawn from the Hijrah and the blessings of Madinah?",
+      "How did Suhayb al-Rumi get past the Quraysh when they came out to stop him leaving Makkah?",
+      "What happened to Umm Salama when her husband tried to take the family out of Makkah?",
+      "On the road north a passing caravan recognised Abu Bakr and asked who the other traveller was. What did he tell them?",
+      "A man caught up with the Prophet and Abu Bakr in the desert hoping to collect the reward. What became of him?",
+      "The bedouin who chased the Prophet and Abu Bakr for the bounty during the migration turned up again at the Farewell Pilgrimage. What did he want to know there?",
     ],
   },
   {
     name: "Early Madinan Period",
     prompts: [
-      "What was the Constitution of Madinah?",
-      "What happened at the Battle of Badr?",
-      "What happened to Ka'b ibn al-Ashraf and why was he assassinated?",
-      "What happened at the Battle of Uhud?",
-      "What happened to the tribe of Banu Qurayza after the Battle of the Trench?",
+      "Who actually killed Abu Jahl, and how did he die?",
+      "What became of the man who killed Hamza? Did he ever accept Islam, and how did the Prophet deal with him afterwards?",
+      "When the Prophet got separated from the bulk of his army at Uhud, who was still with him, and how did that small group keep him alive?",
+      "How did the Muslims find out that the Banu Qurayza had gone over to the enemy while Medina was surrounded?",
+      "One man slipped out of the besieged fortress of Banu Qurayza at night and was let go instead of being killed. Who was he and why was he spared?",
     ],
   },
   {
     name: "Treaties, Conquest & Final Years",
     prompts: [
-      "What were the terms of the Treaty of Hudaybiyyah?",
-      "What happened during the Conquest of Makkah?",
-      "What happened at the Battle of Hunayn?",
-      "What happened during the Farewell Hajj?",
-      "How did the Prophet Muhammad die?",
+      "During the talks outside Mecca a Quraysh negotiator kept reaching for the Prophet's beard. Who stopped him?",
+      "Who ended up holding the keys to the Kaaba after Mecca was taken?",
+      "What did the Prophet give Ka'b ibn Zuhayr after hearing him recite his poem, and what did he ask of him afterwards?",
+      "Umar would not accept the news that the Prophet had died. What was he doing in the mosque, and what finally brought him round?",
+      "The Quraysh chief who stonewalled the Prophet over the treaty at Hudaybiyyah had been a Muslim prisoner years earlier. Where was he held, and what happened to him when Makkah fell?",
     ],
   },
 ];
@@ -82,18 +85,6 @@ function BackIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
       <line x1="19" y1="12" x2="5" y2="12" />
       <polyline points="12 19 5 12 12 5" />
-    </svg>
-  );
-}
-
-function BroomIcon() {
-  return (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 3 10 12" />
-      <path d="M10 12 4 21" />
-      <path d="M10 12 7 21.5" />
-      <path d="M10 12 9.5 22" />
-      <path d="M10 12 12 20.5" />
     </svg>
   );
 }
@@ -168,7 +159,9 @@ export default function App() {
               setTurns((prev) => [
                 ...prev,
                 { id: crypto.randomUUID(), dbId: null, question, answer: evt.text,
-                  sources: [], feedback: null, feedbackError: false, showAllSources: false, done: false },
+                  sources: [], feedback: null, feedbackError: false,
+                  timestampFeedback: null, timestampFeedbackError: false,
+                  showAllSources: false, done: false },
               ]);
             } else {
               appendToLastTurn((t) => ({ ...t, answer: t.answer + evt.text }));
@@ -180,7 +173,9 @@ export default function App() {
               setTurns((prev) => [
                 ...prev,
                 { id: crypto.randomUUID(), dbId: evt.id, question, answer: evt.answer,
-                  sources: evt.sources, feedback: null, feedbackError: false, showAllSources: false, done: true },
+                  sources: evt.sources, feedback: null, feedbackError: false,
+                  timestampFeedback: null, timestampFeedbackError: false,
+                  showAllSources: false, done: true },
               ]);
             } else {
               appendToLastTurn({ dbId: evt.id, sources: evt.sources, done: true });
@@ -226,6 +221,21 @@ export default function App() {
     }
   }
 
+  async function sendTimestampFeedback(turnId, dbId, score) {
+    setTurns((prev) => prev.map((t) => (t.id === turnId ? { ...t, timestampFeedbackError: false } : t)));
+    try {
+      const res = await fetch(`${API_URL}/feedback/${dbId}/timestamp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ score }),
+      });
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      setTurns((prev) => prev.map((t) => (t.id === turnId ? { ...t, timestampFeedback: score } : t)));
+    } catch {
+      setTurns((prev) => prev.map((t) => (t.id === turnId ? { ...t, timestampFeedbackError: true } : t)));
+    }
+  }
+
   const hasConversation = turns.length > 0 || loading;
 
   return (
@@ -245,11 +255,15 @@ export default function App() {
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="What would you like to learn about?" />
             {hasConversation && (
               <button type="button" className="clear-chat-btn" onClick={startNewChat} aria-label="Clear chat" title="Clear chat">
-                <BroomIcon />
+                <img src="/cleaning-broom-2.png" alt="" />
               </button>
             )}
             <button type="submit" aria-label="Ask" disabled={loading}><ArrowIcon /></button>
           </form>
+
+          {turns.length > 0 && !loading && turns[turns.length - 1].done && (
+            <p className="new-topic-hint">Got an unrelated question? Clear this conversation first for the best answer.</p>
+          )}
 
           {!hasConversation && (
             <div className="suggestions">
@@ -311,18 +325,28 @@ export default function App() {
                             disabled={turn.feedback !== null}
                             onClick={() => sendFeedback(turn.id, turn.dbId, 1)}
                             aria-label="Helpful"
-                          >👍</button>
+                          ><span>👍</span></button>
                           <button
                             className={turn.feedback === -1 ? "selected" : ""}
                             disabled={turn.feedback !== null}
                             onClick={() => sendFeedback(turn.id, turn.dbId, -1)}
                             aria-label="Not helpful"
-                          >👎</button>
+                          ><span>👎</span></button>
                           {turn.feedbackError && <small className="feedback-error">couldn't save, try again</small>}
                         </div>
                       )}
                     </article>
                   </div>
+
+                  {!turn.done && (
+                    <>
+                      <div className="source-bar source-bar-loading"><span /><span /></div>
+                      <section className="video-card">
+                        <div className="video-heading">Generating video reference&hellip;</div>
+                        <div className="video-wrap video-wrap-loading"><span /></div>
+                      </section>
+                    </>
+                  )}
 
                   {primary && (
                     <>
@@ -361,6 +385,22 @@ export default function App() {
                           ) : (
                             <div className="video-placeholder"><span>✦</span><small>SEERAH OF THE</small><h2>Prophet Muhammad ﷺ</h2></div>
                           )}
+                        </div>
+                        <div className="timestamp-feedback">
+                          Right moment?
+                          <button
+                            className={turn.timestampFeedback === 1 ? "selected" : ""}
+                            disabled={turn.timestampFeedback !== null}
+                            onClick={() => sendTimestampFeedback(turn.id, turn.dbId, 1)}
+                            aria-label="Timestamp correct"
+                          ><span>👍</span></button>
+                          <button
+                            className={turn.timestampFeedback === -1 ? "selected" : ""}
+                            disabled={turn.timestampFeedback !== null}
+                            onClick={() => sendTimestampFeedback(turn.id, turn.dbId, -1)}
+                            aria-label="Timestamp incorrect"
+                          ><span>👎</span></button>
+                          {turn.timestampFeedbackError && <small className="feedback-error">couldn't save, try again</small>}
                         </div>
                       </section>
                     </>

@@ -22,6 +22,10 @@ TRANSCRIPTS_PATH = DATA_DIR / "seerah_transcripts.jsonl"
 MANIFEST_PATH = DATA_DIR / "chunking_manifest.json"
 PLAIN_CHUNKS_PATH = DATA_DIR / "chunks_plain.json"
 CONTEXTUAL_CHUNKS_PATH = DATA_DIR / "chunks_contextual.json"
+# Same chunks/embeddings as CONTEXTUAL_CHUNKS_PATH, plus a per-chunk 'sentences'
+# field (each sentence individually timestamped) used only for citation
+# refinement - never for embedding or BM25 scoring. See seerah.retrieve.Retriever.
+CONTEXTUAL_CHUNKS_WITH_TIMESTAMPS_PATH = DATA_DIR / "chunks_contextual_with_timestamps.json"
 
 CONTEXTUAL_CACHE_DIR = DATA_DIR / "contextual_cache"
 BATCH_INPUT_DIR = DATA_DIR / "batch_wave_inputs"
@@ -76,6 +80,11 @@ AGENT_MAX_ITERATIONS = 6    # hard cap on search rounds; the model is forced to
                             # conversation, so cost grows faster than linearly with this value.
 AGENT_SEARCH_TOP_K = 5      # chunks per agent search - smaller than the plain top_k=10
                             # default since results accumulate in the conversation across iterations
+
+# --- Citation refinement (a dedicated pass AFTER the answer is written) -----
+# Fixed regardless of how many chunks the agent loop retrieved (5 to ~30) -
+# this keeps the refinement call's context small and bounded either way.
+CITATION_REFINE_TOP_K = 3
 
 # --- Batch API --------------------------------------------------------------
 # A single contextual-summary request carries the FULL lecture (~17k tokens) as

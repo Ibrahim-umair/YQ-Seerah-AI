@@ -153,19 +153,42 @@ The 233 questions that already passed on the simple pipeline were not individual
 
 ---
 
+## Citation precision: pinpointing the exact moment in the video
+
+A retrieved chunk's *start* timestamp is not the same as the moment its content actually begins — an ~800-token chunk can span several minutes, and the specific claim an answer makes is often well past the chunk's own start (or, if the true beginning was cut off by a chunk boundary, just before it). Linking every citation to "wherever this chunk starts" would frequently land a viewer near, but not at, the moment actually being referenced.
+
+This is solved without touching retrieval at all. `SeerahAgent._refine_citations()` (`seerah/agent.py`) runs a small, dedicated pass *after* the answer is already written: given the question, the finished answer, and a fixed set of the top `CITATION_REFINE_TOP_K` (3) retrieved passages — each with every sentence individually timestamped, and paired with the chunk immediately before it in the same lecture in case the real start was cut off by a chunk boundary — a separate OpenAI Structured Outputs call (a strict JSON schema, not a citation format embedded in free text for a parser to potentially miss) points at the exact `[HH:MM:SS]` marker(s) that actually support what the answer says.
+
+Two things keep this strictly an improvement, never a regression:
+- **Validated, never invented**: a returned timestamp is only ever applied if it's found verbatim among the real sentence-level timestamps shown to the model. Anything hallucinated, rounded, or mismatched is simply dropped, and the citation falls back to the chunk's own start timestamp — the same behavior as before this existed.
+- **Bounded cost**: the call's context is fixed at 3 passages regardless of how many chunks a multi-search question actually retrieved (which can be anywhere from 5 to ~30) — so this pass's cost and latency never scale with how much searching the main agentic loop did for a given question.
+
+This same pass also decides which source is shown as *primary*: rather than whichever chunk simply scored highest in retrieval, the lecture(s) the refined citations actually trace back to are surfaced first, with any other lecture the answer genuinely draws on shown alongside it as an additional source.
+
+The sentence-level timestamps this relies on are additive metadata only, layered on top of the existing corpus rather than replacing anything: `data/chunks_contextual_with_timestamps.json` carries the same `text`/`summary` as the committed `chunks_contextual.json` plus a per-chunk `sentences` array, and `python -m seerah.ingest.sentence_timestamps` (or its `--clear` mode) can sync or remove this layer on an already-built Qdrant collection and BM25 index without any re-embedding — a fresh `embed`/`bm25` build picks it up automatically if the file is present. It never touches embeddings or BM25 scoring, so retrieval quality is unaffected either way, and older data without it simply falls back to a chunk's own start timestamp.
+
+Users can flag when a timestamp lands on the wrong moment — see the `/feedback/{id}/timestamp` route and the frontend's second 👍/👎 control, both described below — as a signal for whether this is working in practice, independent of whether the answer itself was rated good.
+
+---
+
 ## Application interface
 
-**Backend** (`seerah/api.py`, FastAPI): wraps `SeerahAgent` behind three routes.
+**Backend** (`seerah/api.py`, FastAPI): wraps `SeerahAgent` behind four routes.
 
 | Route | Purpose |
 |---|---|
 | `GET /health` | liveness check |
-| `POST /ask` | `{question, previous_response_id?}` → `{id, answer, sources, response_id}` |
-| `POST /feedback/{id}` | `{score: 1 \| -1}` — thumbs up/down on a specific answer |
+| `POST /ask` | `{question, previous_response_id?}` → streamed as Server-Sent Events (see below); rate-limited to 10 requests/minute per client IP |
+| `POST /feedback/{id}` | `{score: 1 \| -1}` — thumbs up/down on the answer overall |
+| `POST /feedback/{id}/timestamp` | `{score: 1 \| -1}` — thumbs up/down on the primary citation's timestamp specifically (did the video land on the right moment), a separate signal from the answer-quality rating above |
 
 Multi-turn conversation needs no manually-reconstructed message history: `previous_response_id` (returned from the prior `/ask`) is handed to OpenAI's Responses API, which resumes that conversation's full state server-side — including its own prior tool calls, not just the visible text. Every call is logged to Postgres (see Monitoring below) with token counts, cost, and latency.
 
-**Frontend** (`frontend/`, React + Vite): a chat-style UI over that API — ask a question, get an answer with clickable sources (each linking to the exact lecture *and timestamp* via `&t=<seconds>s`), rate it 👍/👎, keep asking follow-ups in the same thread or start fresh with "Clear chat." Multi-turn is handled client-side by holding onto the last `response_id` and passing it on the next request; nothing persists across a page reload by design — no accounts, no server-side session list, deliberately out of scope for a project with no expected concurrent users.
+`/ask` streams its answer as Server-Sent Events rather than a single JSON response, so the UI can render tokens as they're generated instead of waiting on the whole answer (plus the citation-refinement pass above) to finish: repeated `{"type": "token", "text": "..."}` events as the answer is written, then one `{"type": "done", "id", "answer", "sources", "response_id"}` event carrying everything a non-streaming caller would need — or a `{"type": "error", "message"}` event in its place if something failed mid-stream.
+
+`/ask` is also rate-limited (10 requests/minute per client IP, via `slowapi`) — each call costs real OpenAI money (the agentic search loop plus the citation-refinement pass), so this caps how much a single caller can run up before it starts returning 429 instead of a stream. The limiter keys off the connecting client's IP directly, so if this is ever deployed behind a reverse proxy or load balancer, that becomes the proxy's own IP instead — rate-limiting the whole app together rather than per real caller — worth revisiting if that becomes the deployment shape.
+
+**Frontend** (`frontend/`, React + Vite): a chat-style UI over that API — ask a question, get an answer with clickable sources (each linking to the exact lecture *and timestamp* via `&t=<seconds>s`), rate the answer 👍/👎, separately rate whether the primary citation's timestamp actually landed on the right moment 👍/👎, keep asking follow-ups in the same thread or start fresh with "Clear chat." Multi-turn is handled client-side by holding onto the last `response_id` and passing it on the next request; nothing persists across a page reload by design — no accounts, no server-side session list, deliberately out of scope for a project with no expected concurrent users.
 
 **Running it locally**: first time on a fresh clone, follow "Quick start" below in order (Qdrant needs to be populated *before* the API container starts, or it crash-loops). After that's done once, day-to-day it's just:
 ```bash
@@ -178,11 +201,11 @@ cd frontend && npm install && npm run dev
 
 ## Monitoring & analytics
 
-Every `/ask` call writes one row to Postgres' `conversations` table (question, answer, sources, search log, model, prompt/completion/total tokens, cost, response time, and the `response_id`/`previous_response_id` pair that reconstructs multi-turn threads); every `/feedback` call writes to `feedback`, linked by `conversation_id`. Schema and helpers live in `seerah/db.py`.
+Every `/ask` call writes one row to Postgres' `conversations` table (question, answer, sources, search log, model, prompt/completion/total tokens, cost, response time, and the `response_id`/`previous_response_id` pair that reconstructs multi-turn threads); every `/feedback` call writes to `feedback`, and every `/feedback/{id}/timestamp` call writes to its own `timestamp_feedback` table — kept separate rather than a column on `feedback` since the two rate different things (answer quality vs. citation timestamp precision) and a user may only rate one of them for a given turn. All three are linked by `conversation_id`; schema and helpers live in `seerah/db.py`.
 
 **Grafana** (`docker-compose.yml`'s `grafana` service, config in `grafana/provisioning/`) reads directly from that same Postgres — no separate metrics pipeline. The dashboard is fully provisioned (data source + all panels defined in checked-in YAML/JSON, not built by clicking through the UI), so it reproduces automatically on a fresh `docker-compose up` with zero manual setup — verified by deleting the Grafana container *and* its data volume entirely and confirming everything reappeared correctly from nothing but the compose file.
 
-8 panels: recent conversations (table), model usage (bar), user feedback (pie), response time / avg token usage / cost (time series), plus avg response time and total cost as single-number stat panels.
+8 panels: recent conversations (table), model usage (bar), user feedback (pie), response time / avg token usage / cost (time series), plus avg response time and total cost as single-number stat panels. The user-feedback panel currently reads only `feedback` (answer quality); `timestamp_feedback` is logged and queryable but not yet its own panel — a natural next addition.
 
 Access at `http://localhost:3000` (`admin`/`admin`). **Deliberately never exposed publicly** — it shows internal metrics (cost, question volume, raw feedback) that have no reason to be public, so it stays local-only even once the app itself is deployed.
 
@@ -190,7 +213,7 @@ Access at `http://localhost:3000` (`admin`/`admin`). **Deliberately never expose
 
 `docker-compose.yml` runs 4 services: `app` (the FastAPI backend, built from the root `Dockerfile`), `qdrant`, `postgres`, `grafana`. One command, `docker-compose up -d`, brings up the entire backend stack.
 
-The `Dockerfile` builds the BM25 index *at image-build time* (from the committed `data/chunks_contextual.json`) rather than depending on `data/bm25_index/` (gitignored) already existing on whatever machine runs `docker build` — so the image is self-contained on a completely fresh clone. It does **not** run the embedding step (`seerah.ingest.embed`) — that's a one-time, costly (~$0.28), API-dependent step you run once against a running Qdrant, same as the Quick start below.
+The `Dockerfile` builds the BM25 index *at image-build time* (from the committed `data/chunks_contextual.json`, or `data/chunks_contextual_with_timestamps.json` if present — see "Citation precision" above) rather than depending on `data/bm25_index/` (gitignored) already existing on whatever machine runs `docker build` — so the image is self-contained on a completely fresh clone. It does **not** run the embedding step (`seerah.ingest.embed`) — that's a one-time, costly (~$0.28), API-dependent step you run once against a running Qdrant, same as the Quick start below.
 
 The frontend is intentionally not part of this compose file — see "Application interface" above for why.
 
@@ -246,7 +269,7 @@ Stage 2 also has `--dry-run` (`make context-plan`), which reports exactly which 
 
 ### What's committed vs. rebuilt locally
 
-Committed: `data/seerah_transcripts.jsonl`, `data/chunks_plain.json`, `data/chunks_contextual.json`, `data/chunking_manifest.json`.
+Committed: `data/seerah_transcripts.jsonl`, `data/chunks_plain.json`, `data/chunks_contextual.json`, `data/chunks_contextual_with_timestamps.json`, `data/chunking_manifest.json`.
 
 Rebuilt locally (gitignored): `data/contextual_cache/`, `data/batch_wave_inputs/`, `data/bm25_index/`, `qdrant_storage/`, `postgres_storage/`, the `grafana_data` Docker volume.
 
@@ -259,11 +282,12 @@ seerah/                 the application
   retrieve.py           vector + BM25 retrieval behind one result type
   answer.py             SeerahRAG - the simple, single-shot pipeline
   agent.py              SeerahAgent - the agentic, multi-turn pipeline
-  db.py                 Postgres schema + conversation/feedback logging
-  api.py                FastAPI app: /health, /ask, /feedback
+  db.py                 Postgres schema + conversation/feedback/timestamp-feedback logging
+  api.py                FastAPI app: /health, /ask (streamed, rate-limited), /feedback, /feedback/.../timestamp
   bot.py                interactive CLI over the agent (or --simple for SeerahRAG)
   cli.py                interactive raw-retrieval tool (no generation)
-  ingest/               the four ingestion stages above
+  ingest/               the four ingestion stages above, plus sentence_timestamps.py (adds/removes
+                        per-sentence timestamps on an already-built index, no re-embedding)
   eval/                 retrieval + LLM-as-judge evaluation tooling
 frontend/               React + Vite chat UI over the API
 grafana/provisioning/   dashboard + data source, auto-loaded on container start

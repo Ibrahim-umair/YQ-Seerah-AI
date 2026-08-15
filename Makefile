@@ -18,6 +18,7 @@
         context context-rebuild context-plan \
         embed embed-rebuild embed-verify \
         text-search text-search-rebuild \
+        sentences sentences-clear \
         rebuild-all eval clean
 
 PY := python
@@ -53,6 +54,13 @@ help:
 	@echo "  Stage 4 - text-search  contextual -> data/bm25_index/               (free)"
 	@echo "    make text-search        use the existing index"
 	@echo "    make text-search-rebuild  rebuild it"
+	@echo ""
+	@echo "  Stage 3b - sentences   adds/removes per-sentence timestamps on an"
+	@echo "                         ALREADY-BUILT collection - no re-embed, free (\$$0)"
+	@echo "    make sentences          add them if data/chunks_contextual_with_timestamps.json"
+	@echo "                            exists, remove them if it doesn't"
+	@echo "    make sentences-clear    force-remove them either way (e.g. to reproduce"
+	@echo "                            exactly what a pre-this-feature commit would have)"
 	@echo ""
 	@echo "  Use it"
 	@echo "    make query              interactive raw retrieval, no generation, over all 104 lectures"
@@ -142,6 +150,14 @@ text-search:
 
 text-search-rebuild:
 	$(PY) -m seerah.ingest.bm25 --force
+
+# --- stage 3b: sentence-level timestamps (reversible, no re-embed) ----------
+
+sentences:
+	$(PY) -m seerah.ingest.sentence_timestamps
+
+sentences-clear:
+	$(PY) -m seerah.ingest.sentence_timestamps --clear
 
 # --- use it -----------------------------------------------------------------
 
