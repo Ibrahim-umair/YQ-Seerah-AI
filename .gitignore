@@ -3,6 +3,9 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
+# Local Claude Code tool permissions - machine-specific, not project config.
+.claude/settings.local.json
+
 # Vector store data - rebuilt by `python -m seerah.ingest.embed` (~$0.28)
 qdrant_storage/
 

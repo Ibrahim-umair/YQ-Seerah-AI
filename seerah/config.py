@@ -86,6 +86,15 @@ AGENT_SEARCH_TOP_K = 5      # chunks per agent search - smaller than the plain t
 # this keeps the refinement call's context small and bounded either way.
 CITATION_REFINE_TOP_K = 3
 
+# --- Live-request safety net -------------------------------------------------
+# Applied to every OpenAI call made while serving /ask (the agent's search/
+# answer/citation-refinement calls, plus query embedding in retrieve.py) - a
+# hung network connection would otherwise tie up a request thread indefinitely.
+# Not applied to offline pipeline scripts (contextualize, embed, judge_answers),
+# which have no live caller waiting and already manage their own timing (e.g.
+# Batch API polling).
+OPENAI_TIMEOUT_SECONDS = 60
+
 # --- Batch API --------------------------------------------------------------
 # A single contextual-summary request carries the FULL lecture (~17k tokens) as
 # context, so a naive "submit everything" batch lands at ~26M enqueued tokens -

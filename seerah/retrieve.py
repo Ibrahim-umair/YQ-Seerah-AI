@@ -49,7 +49,7 @@ class Retriever:
     BM25 index costs a couple of seconds and shouldn't happen per query."""
 
     def __init__(self, load_bm25=True, load_vector=True, load_chunk_lookup=True):
-        self.openai = OpenAI() if load_vector else None
+        self.openai = OpenAI(timeout=config.OPENAI_TIMEOUT_SECONDS) if load_vector else None
         self.qdrant = None
         self.bm25 = None
         self._chunk_lookup = None

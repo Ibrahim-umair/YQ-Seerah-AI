@@ -7,58 +7,57 @@ const API_URL = import.meta.env.VITE_API_URL;
 // Real questions from the eval set (data/eval_questions_raw.json), not
 // invented - each one is grounded in a specific, verified incident rather
 // than a vague topic, so retrieval lands on a narrow, precise set of chunks
-// instead of scattering across everything tagged with a broad theme. Most
-// are single-lecture (T1/T2); a few are deliberately cross-episode (T3),
-// tying two arcs together, since those make for the most compelling prompts.
+// instead of scattering across everything tagged with a broad theme. Kept
+// deliberately short (most under 100 characters) so they read well as compact
+// suggestion chips; a few are cross-episode (T3), tying two arcs together.
 const categories = [
   {
     name: "Before Revelation",
     prompts: [
-      "The well of Zamzam had been lost for generations. How was it found again, and what trouble did that stir up?",
-      "Something happened while the Prophet was being raised out in the desert that frightened his foster mother into sending him back. What was it?",
-      "A trader from Yemen was cheated out of his money in Mecca and had no clan there to back him. What did he do about it?",
-      "Khadija was wealthy and had turned down plenty of suitors. How did she end up marrying the Prophet?",
-      "The Prophet's grandfather wasn't actually born with the name everyone knows him by. How did he end up with it?",
+      "How certain are we really about the exact day the Prophet was born?",
+      "What did the Prophet do for a living as a young man, and what was he paid for it?",
+      "How did Khadija رضي الله عنها, a wealthy woman who had turned down many suitors, end up marrying the Prophet?",
+      "If the Arabs traced their religion back to Abraham, how did they end up worshipping idols at all?",
     ],
   },
   {
     name: "The Meccan Period",
     prompts: [
-      "After that first encounter in the cave, nothing more came for a while. What happened during that gap and how did it end?",
-      "When the Negus demanded to know what the Muslim refugees believed about Jesus, what answer did Ja'far give, and how did the king react?",
-      "After the people of Ta'if drove the Prophet out, he was offered the chance to have them destroyed. Who made the offer and what did he say?",
-      "On the night journey the Prophet was offered a choice between two drinks. Which did he take, and what was he told about his choice?",
-      "Was the king of Abyssinia already a Muslim when he gave the emigrants refuge, or did that come later?",
+      "How did Hamza come to accept Islam?",
+      "How did the number of daily prayers end up at five?",
+      "When his uncle finally begged him to drop the whole thing, what did the Prophet say back?",
+      "What price did Suhayb the Roman have to pay before the Quraysh would let him leave Mecca?",
+      "Did Bilal ever come face to face with the man who used to torture him, and what happened?",
     ],
   },
   {
     name: "The Hijrah",
     prompts: [
+      "Out of all the places the Muslims could have gone, why Madinah?",
+      "What happened to Umm Salama رضي الله عنها when her husband tried to take the family out of Makkah?",
       "How did Suhayb al-Rumi get past the Quraysh when they came out to stop him leaving Makkah?",
-      "What happened to Umm Salama when her husband tried to take the family out of Makkah?",
-      "On the road north a passing caravan recognised Abu Bakr and asked who the other traveller was. What did he tell them?",
-      "A man caught up with the Prophet and Abu Bakr in the desert hoping to collect the reward. What became of him?",
-      "The bedouin who chased the Prophet and Abu Bakr for the bounty during the migration turned up again at the Farewell Pilgrimage. What did he want to know there?",
+      "Once the Quraysh realised the Prophet had slipped out of Makkah, what price did they put on him?",
+      "What did the Quraysh decide to do about the Prophet at their late-night meeting, and who was kept out of it?",
     ],
   },
   {
     name: "Early Madinan Period",
     prompts: [
       "Who actually killed Abu Jahl, and how did he die?",
-      "What became of the man who killed Hamza? Did he ever accept Islam, and how did the Prophet deal with him afterwards?",
-      "When the Prophet got separated from the bulk of his army at Uhud, who was still with him, and how did that small group keep him alive?",
-      "How did the Muslims find out that the Banu Qurayza had gone over to the enemy while Medina was surrounded?",
-      "One man slipped out of the besieged fortress of Banu Qurayza at night and was let go instead of being killed. Who was he and why was he spared?",
+      "How did Abu Lahab die?",
+      "Did the trench actually keep the enemy out of Medina?",
+      "Was anyone actually punished for spreading the rumour about Aisha رضي الله عنها?",
+      "Why had Salman al-Farisi never fought in a battle before the trench was dug?",
     ],
   },
   {
     name: "Treaties, Conquest & Final Years",
     prompts: [
-      "During the talks outside Mecca a Quraysh negotiator kept reaching for the Prophet's beard. Who stopped him?",
+      "Did the Muslims win at Mu'tah or lose?",
       "Who ended up holding the keys to the Kaaba after Mecca was taken?",
-      "What did the Prophet give Ka'b ibn Zuhayr after hearing him recite his poem, and what did he ask of him afterwards?",
-      "Umar would not accept the news that the Prophet had died. What was he doing in the mosque, and what finally brought him round?",
-      "The Quraysh chief who stonewalled the Prophet over the treaty at Hudaybiyyah had been a Muslim prisoner years earlier. Where was he held, and what happened to him when Makkah fell?",
+      "Why did the siege of Ta'if end without the city ever being taken?",
+      "What happened to the man who killed Hamza, once the Muslims had the upper hand?",
+      "What did the Persian emperor do when the letter from Muhammad ﷺ was delivered to him?",
     ],
   },
 ];
@@ -89,19 +88,57 @@ function BackIcon() {
   );
 }
 
+function CloseIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="5" y1="5" x2="19" y2="19" />
+      <line x1="19" y1="5" x2="5" y2="19" />
+    </svg>
+  );
+}
+
+function GithubIcon() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.69-1.28-1.69-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.75 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.73 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.08 0 4.41-2.7 5.38-5.27 5.67.42.36.78 1.07.78 2.16 0 1.56-.01 2.82-.01 3.2 0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+    </svg>
+  );
+}
+
+function LinkedinIcon() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.44-2.14 2.93v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.37 4.26 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z" />
+    </svg>
+  );
+}
+
 export default function App() {
   const [query, setQuery] = useState("");
   const [turns, setTurns] = useState([]);
   const [pendingQuestion, setPendingQuestion] = useState(null);
   const [previousResponseId, setPreviousResponseId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [statusText, setStatusText] = useState("");
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showWhy, setShowWhy] = useState(false);
   const pendingRef = useRef(null);
 
   useEffect(() => {
     if (loading) pendingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [loading]);
+
+  useEffect(() => {
+    if (!showWhy) return;
+    const onKeyDown = (e) => e.key === "Escape" && setShowWhy(false);
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [showWhy]);
 
   async function handleSubmit(e) {
     e?.preventDefault();
@@ -111,6 +148,7 @@ export default function App() {
     setQuery("");
     setPendingQuestion(question);
     setLoading(true);
+    setStatusText("");
     setError(null);
 
     // Set once the first "token" event arrives, so a "done" event that
@@ -151,11 +189,14 @@ export default function App() {
           if (!raw.startsWith("data: ")) continue;
           const evt = JSON.parse(raw.slice(6));
 
-          if (evt.type === "token") {
+          if (evt.type === "status") {
+            setStatusText(evt.text);
+          } else if (evt.type === "token") {
             if (!started) {
               started = true;
               setPendingQuestion(null);
               setLoading(false);
+              setStatusText("");
               setTurns((prev) => [
                 ...prev,
                 { id: crypto.randomUUID(), dbId: null, question, answer: evt.text,
@@ -170,6 +211,7 @@ export default function App() {
             if (!started) {
               setPendingQuestion(null);
               setLoading(false);
+              setStatusText("");
               setTurns((prev) => [
                 ...prev,
                 { id: crypto.randomUUID(), dbId: evt.id, question, answer: evt.answer,
@@ -191,6 +233,7 @@ export default function App() {
     } finally {
       setPendingQuestion(null);
       setLoading(false);
+      setStatusText("");
     }
   }
 
@@ -242,7 +285,7 @@ export default function App() {
     <div className="app">
       <header className="header">
         <a className="brand" href="/"><img src="/seerah-logo.png" alt="Seerah AI" /></a>
-        <a href="#about" className="about-link">About</a>
+        <button type="button" className="about-link" onClick={() => setShowWhy(true)}>About</button>
       </header>
 
       <main className="main">
@@ -417,7 +460,10 @@ export default function App() {
                 </div>
                 <div className="answer-row">
                   <div className="avatar ai-avatar"><img src="/seerah-logo.png" alt="" /></div>
-                  <div className="answer-card loading"><span /><span /><span /></div>
+                  <div className="answer-card loading">
+                    {statusText && <p className="status-line">{statusText}</p>}
+                    <div className="shimmer-bars"><span /><span /><span /></div>
+                  </div>
                 </div>
               </div>
             )}
@@ -436,6 +482,40 @@ export default function App() {
         <p className="footer-primary">Seerah AI can make mistakes &mdash; refer to the original lectures for full context.</p>
         <p className="footer-secondary">Not affiliated with Dr. Yasir Qadhi</p>
       </footer>
+
+      {showWhy && (
+        <div className="why-overlay" role="dialog" aria-modal="true" onClick={() => setShowWhy(false)}>
+          <div className="why-card" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="why-close" onClick={() => setShowWhy(false)} aria-label="Close">
+              <CloseIcon />
+            </button>
+
+            <div className="why-zigzag why-zigzag-top" aria-hidden="true" />
+            <p className="why-note">
+              Shaykh Yasir Qadhi's Seerah series is an incredible 150+ hour resource, but I constantly struggled to
+              remember specific events, names, or lessons after listening. Finding a single point again took way
+              too much time skipping through videos. I built Seerah AI to make the entire series easily
+              searchable: just ask a question in plain English, and it takes you straight to the exact lecture and
+              timestamp.
+            </p>
+            <div className="why-zigzag why-zigzag-bottom" aria-hidden="true" />
+
+            <div className="why-thanks">
+              <p>With thanks to Shaykh Dr. Yasir Qadhi, whose lectures are the foundation of everything here.</p>
+              <p>
+                And to{" "}
+                <a href="https://www.linkedin.com/in/wasifmasood/" target="_blank" rel="noreferrer">Wasif Masood</a>,
+                whose Hugging Face dataset of the lecture transcripts made this project possible.
+              </p>
+            </div>
+
+            <div className="why-socials">
+              <a href="https://github.com/Ibrahim-umair" target="_blank" rel="noreferrer" aria-label="GitHub"><GithubIcon /></a>
+              <a href="https://www.linkedin.com/in/ibrahim-bin-umair-a99899247/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedinIcon /></a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

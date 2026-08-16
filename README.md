@@ -23,7 +23,7 @@ Chunks are built with sentence-aware splitting (LlamaIndex `SentenceSplitter`, 8
 
 ### Chunking reproducibility, and a data defect this uncovered
 
-`SentenceSplitter` reserves room for a `Document`'s metadata inside each chunk's token budget, so passing populated metadata shifts every chunk boundary. Earlier runs of this project did that and later runs did not, which left the corpus cut two different ways. `data/chunking_manifest.json` records which mode produced each lecture, so `python -m seerah.ingest.chunk --verify` reproduces the committed artifact byte-for-byte (`verify_against_artifact()`) and re-checks full transcript coverage (`report_coverage()`), both in `chunk.py`. New lectures should use `without_metadata`, which gives each chunk the full 800-token budget.
+`SentenceSplitter` reserves room for a `Document`'s metadata inside each chunk's token budget, so passing populated metadata shifts every chunk boundary. Earlier runs of this project did that and later runs did not, which left the corpus cut two different ways. `data/chunking_manifest.json` records which mode produced each lecture, so re-chunking from the transcripts reproduces the exact same boundaries per lecture instead of silently re-cutting the corpus a third way. New lectures should use `without_metadata`, which gives each chunk the full 800-token budget. Every chunking run also asserts full transcript coverage (`report_coverage()` in `chunk.py`) — every character of all 104 transcripts must fall inside at least one chunk.
 
 That inconsistency also caused a real defect, since fixed. Three lectures (26, 42, 43) were interrupted mid-run and resumed by a later script that keyed resume on chunk *index*. Because the two runs cut the text differently, index *n* did not mean the same thing in both, and the resumed lectures spliced together chunks from two different cuts — silently dropping **2,201 characters** that then existed in no chunk and could not be retrieved (including As'ad ibn Zurara's speech at the Second Pledge of Aqaba, and the incident that triggered the conflict with Banu Qaynuqa). Nothing errored; the run reported a plausible chunk count and looked healthy.
 
@@ -197,7 +197,7 @@ cd frontend && npm install && npm run dev
 ```
 `frontend/.env`'s `VITE_API_URL` must point at wherever the backend is actually reachable (`http://localhost:8000` by default).
 
-**Deployment plan** (not live yet - pending cloud credits): the frontend is a pure static build (`npm run build`), intended for a static host (Vercel) rather than a container — a static SPA has no server-side logic to containerize, so wrapping it in Docker would only ever matter for the local `docker-compose` story, never for actual production. The backend + Qdrant + Postgres run together via the same `docker-compose.yml` on a small VPS once that's set up.
+**Deployment plan** (not live yet - pending cloud credits): the frontend is a pure static build (`npm run build`), intended for a static host (Vercel) rather than a container — a static SPA has no server-side logic to containerize, so wrapping it in Docker would only ever matter for the local `docker-compose` story, never for actual production. The backend + Qdrant + Postgres run together via the same `docker-compose.yml` on a VM (Azure, or any equivalent VPS) once that's set up — see "TLS / going public" under Containerization below for the one extra step this split (static frontend, separate backend host) requires.
 
 ## Monitoring & analytics
 
@@ -211,9 +211,13 @@ Access at `http://localhost:3000` (`admin`/`admin`). **Deliberately never expose
 
 ## Containerization
 
-`docker-compose.yml` runs 4 services: `app` (the FastAPI backend, built from the root `Dockerfile`), `qdrant`, `postgres`, `grafana`. One command, `docker-compose up -d`, brings up the entire backend stack.
+`docker-compose.yml` runs 4 core services: `app` (the FastAPI backend, built from the root `Dockerfile`), `qdrant`, `postgres`, `grafana` — plus an optional 5th, `caddy` (see "TLS / going public" below). One command, `docker-compose up -d`, brings up the backend stack.
 
 The `Dockerfile` builds the BM25 index *at image-build time* (from the committed `data/chunks_contextual.json`, or `data/chunks_contextual_with_timestamps.json` if present — see "Citation precision" above) rather than depending on `data/bm25_index/` (gitignored) already existing on whatever machine runs `docker build` — so the image is self-contained on a completely fresh clone. It does **not** run the embedding step (`seerah.ingest.embed`) — that's a one-time, costly (~$0.28), API-dependent step you run once against a running Qdrant, same as the Quick start below.
+
+**Network exposure**: `app`, `postgres`, `qdrant`, and `grafana` all bind to `127.0.0.1` only, not `0.0.0.0` — none of them are meant to be reachable from outside the host directly (Qdrant and Postgres have no/weak auth by default; Grafana is an internal ops dashboard, see Monitoring above). This doesn't break anything locally (the frontend's default `http://127.0.0.1:8000` still works, and container-to-container traffic - `app` to `postgres`/`qdrant` - goes over the compose network regardless of host port bindings). It does mean that, as shipped, nothing in this stack is actually reachable once it's running on a remote host - which is deliberate: see below for the one service that's meant to be.
+
+**TLS / going public**: `caddy` is the only service meant to be internet-facing, and it's opt-in (`docker compose --profile proxy up -d`, or `make up-proxy`) rather than part of the default `up`, so local dev is unaffected either way. It reverse-proxies to `app` over the internal network and requests/renews a real Let's Encrypt certificate for `DOMAIN` (set in `.env`) automatically on first start - no certbot, no manual renewal steps. This matters more than "nice to have" the moment the frontend is deployed to a host like Vercel: a browser will not let an HTTPS page call a plain `http://` API at all ("mixed content"), so a deployed frontend simply cannot reach a TLS-less backend, full stop. Before starting it: point `DOMAIN`'s DNS A record at the backend host's public IP, and make sure ports 80/443 are open on that host (Let's Encrypt's HTTP-01 challenge needs both to succeed). The Caddyfile also sets `flush_interval -1`, so `/ask`'s Server-Sent Events still stream token-by-token through the proxy instead of arriving all at once.
 
 The frontend is intentionally not part of this compose file — see "Application interface" above for why.
 
@@ -294,5 +298,6 @@ grafana/provisioning/   dashboard + data source, auto-loaded on container start
 data/                   dataset and pipeline artifacts
 pilot_evaluation/       the 10-lecture retrieval experiment (frozen evidence)
 Dockerfile              backend API image (see Containerization above)
-docker-compose.yml      app + qdrant + postgres + grafana
+docker-compose.yml      app + qdrant + postgres + grafana + optional caddy
+Caddyfile               reverse proxy + automatic TLS, opt-in (see "TLS / going public")
 ```

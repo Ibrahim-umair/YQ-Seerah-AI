@@ -226,7 +226,7 @@ class SeerahAgent:
                  model=config.ANSWER_MODEL, max_iterations=config.AGENT_MAX_ITERATIONS,
                  search_top_k=config.AGENT_SEARCH_TOP_K, temperature=None):
         self.retriever = retriever or Retriever()
-        self.llm_client = llm_client or OpenAI()
+        self.llm_client = llm_client or OpenAI(timeout=config.OPENAI_TIMEOUT_SECONDS)
         self.instructions = instructions.format(max_iterations=max_iterations)
         self.model = model
         self.max_iterations = max_iterations
@@ -507,6 +507,11 @@ class SeerahAgent:
         answer's text as it's generated, instead of returning it whole.
 
         Yields, in order:
+          {"type": "status", "text": "..."}  - zero or more, before any "token" -
+                                                the model's own one-sentence reason
+                                                for a search it's about to run (see
+                                                the "reason" argument on SEARCH_TOOL);
+                                                never the raw search query itself
           {"type": "token", "text": "..."}   - a chunk of answer text
           {"type": "done", "answer": ..., "hits": [...], "search_log": [...],
            "usage": {...}}                   - exactly once, last - same
@@ -605,6 +610,12 @@ class SeerahAgent:
             for item in function_calls:
                 args = json.loads(item.arguments)
                 query, reason = args["query"], args.get("reason", "")
+                # Surfaced to the caller as its own event, deliberately just this
+                # one sentence - never the raw query, which is often a bare
+                # keyword/spelling variant (e.g. "Badar") with no sentence
+                # structure and nothing a user should be shown directly.
+                if reason:
+                    yield {"type": "status", "text": reason}
                 hits = self._search(query)
                 for hit in hits:
                     all_hits[(hit.lecture_number, hit.chunk_index)] = hit

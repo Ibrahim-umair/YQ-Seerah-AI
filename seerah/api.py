@@ -21,6 +21,9 @@ the next /ask request. Omit it to start a fresh, unrelated conversation.
 /ask streams its answer as Server-Sent Events (not a single JSON body) -
 Swagger UI's "Try it out" will send the request fine but only shows the raw
 event text, not a rendered stream. Events, in order:
+  data: {"type": "status", "text": "..."}     - zero or more, before any "token" -
+    the agent's own one-sentence reason for a search it's running, never the
+    raw search query (see seerah.agent.SeerahAgent.ask_stream)
   data: {"type": "token", "text": "..."}      - repeated, as the answer is written
   data: {"type": "done", "id": ..., "answer": ..., "sources": [...], "response_id": "..."}
   data: {"type": "error", "message": "..."}   - instead of "done", if something failed
@@ -37,7 +40,7 @@ import psycopg
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -74,7 +77,11 @@ agent = SeerahAgent()
 
 
 class AskRequest(BaseModel):
-    question: str
+    # max_length blocks context-stuffing (a huge pasted question inflating a
+    # single call's cost) - 2000 chars comfortably fits genuine multi-part
+    # questions while rejecting anything pathological. FastAPI returns a 422
+    # automatically if this is violated.
+    question: str = Field(min_length=1, max_length=2000)
     previous_response_id: str | None = None
 
 
@@ -97,6 +104,10 @@ def ask(request: Request, body: AskRequest):
     def event_stream():
         try:
             for event in agent.ask_stream(body.question, previous_response_id=body.previous_response_id):
+                if event["type"] == "status":
+                    yield sse({"type": "status", "text": event["text"]})
+                    continue
+
                 if event["type"] == "token":
                     yield sse({"type": "token", "text": event["text"]})
                     continue

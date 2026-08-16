@@ -1,0 +1,9 @@
+{$DOMAIN} {
+	# flush_interval -1: send bytes to the client as soon as the app writes
+	# them. /ask streams its answer as Server-Sent Events (seerah/api.py) -
+	# without this, a proxy is free to buffer the response and the frontend
+	# would see the whole answer arrive at once instead of token by token.
+	reverse_proxy app:8000 {
+		flush_interval -1
+	}
+}

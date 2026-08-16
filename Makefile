@@ -13,7 +13,7 @@
 # Run every target from the repository root.
 
 .DEFAULT_GOAL := help
-.PHONY: help install up up-infra down logs setup verify query bot api db \
+.PHONY: help install up up-infra up-proxy down logs setup verify query bot api db \
         chunk chunk-rebuild chunk-verify \
         context context-rebuild context-plan \
         embed embed-rebuild embed-verify \
@@ -32,6 +32,7 @@ help:
 	@echo "    make install            install pinned dependencies"
 	@echo "    make up-infra           start ONLY Qdrant + Postgres (no app/Grafana yet)"
 	@echo "    make up / down / logs   start / stop / tail the FULL stack (app, Qdrant, Postgres, Grafana)"
+	@echo "    make up-proxy           also start Caddy (real TLS) - needs DOMAIN set in .env, see .env.example"
 	@echo "    make db                 create the conversations/feedback Postgres tables"
 	@echo "    make setup              everything a fresh clone needs, in the right order:"
 	@echo "                            infra up -> embed -> text-search -> db -> full stack up"
@@ -85,6 +86,9 @@ up-infra:
 
 up:
 	docker compose up -d
+
+up-proxy:
+	docker compose --profile proxy up -d
 
 down:
 	docker compose down

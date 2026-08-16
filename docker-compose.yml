@@ -4,8 +4,14 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: seerah_app
+    # 127.0.0.1-only by default - plain HTTP, no TLS. Reachable directly for
+    # local dev (frontend/.env already points at 127.0.0.1:8000). For a real
+    # deployment, bring up the `caddy` service too (`--profile proxy`, see
+    # below) - it's the only thing that should ever be internet-facing, and
+    # it reaches this container over the internal compose network regardless
+    # of this binding, the same as postgres/qdrant above.
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     env_file:
       - .env
     environment:
@@ -21,9 +27,12 @@ services:
   qdrant:
     image: qdrant/qdrant:latest
     container_name: seerah_qdrant
+    # 127.0.0.1-only: only the app container needs this (over the internal
+    # compose network, unaffected by this binding) - Qdrant has no built-in
+    # auth here, so it must never be reachable from outside this host.
     ports:
-      - "6333:6333"  # REST API + dashboard (http://localhost:6333/dashboard)
-      - "6334:6334"  # gRPC API
+      - "127.0.0.1:6333:6333"  # REST API + dashboard (http://localhost:6333/dashboard)
+      - "127.0.0.1:6334:6334"  # gRPC API
     volumes:
       - ./qdrant_storage:/qdrant/storage
     restart: unless-stopped
@@ -32,11 +41,18 @@ services:
     image: postgres:16
     container_name: seerah_postgres
     environment:
-      POSTGRES_DB: seerah
-      POSTGRES_USER: seerah
-      POSTGRES_PASSWORD: seerah
+      # Sourced from .env (docker-compose reads it automatically for this kind
+      # of ${...} substitution) rather than hardcoded, so there's one place to
+      # change the password - previously this and .env's copy could drift out
+      # of sync silently.
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # 127.0.0.1-only: same reasoning as qdrant above. CHANGE POSTGRES_PASSWORD
+    # in .env before deploying anywhere but a local machine - "seerah" is a
+    # publicly-known default from this repo's own .env.example.
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./postgres_storage:/var/lib/postgresql/data
     restart: unless-stopped
@@ -44,11 +60,17 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: seerah_grafana
-    # Private ops dashboard only - deliberately never exposed publicly, see README.
+    # Private ops dashboard only - deliberately never exposed publicly, see
+    # README. 127.0.0.1-only, so reaching it remotely means an SSH tunnel
+    # (e.g. `ssh -L 3000:localhost:3000 <host>`), not a direct URL - that's
+    # intentional, not a bug, once this is deployed off your own machine.
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      # CHANGE GRAFANA_ADMIN_PASSWORD in .env before deploying anywhere but a
+      # local machine - defaults to "admin" (Grafana's own default) only so
+      # nothing extra is required for local dev.
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
@@ -56,5 +78,31 @@ services:
       - postgres
     restart: unless-stopped
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: seerah_caddy
+    # Opt-in (`docker compose --profile proxy up -d`) - the ONLY service
+    # meant to be internet-facing. Terminates real TLS automatically (Caddy
+    # requests and renews a Let's Encrypt cert for DOMAIN on first start - no
+    # certbot, no manual renewal) and reverse-proxies to the app container
+    # over the internal network. Requires DOMAIN in .env to already have a
+    # public DNS A record pointing at this host, and ports 80/443 reachable
+    # from the internet (Let's Encrypt's HTTP-01 challenge needs both).
+    profiles: ["proxy"]
+    environment:
+      - DOMAIN=${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    restart: unless-stopped
+
 volumes:
   grafana_data:
+  caddy_data:
+  caddy_config:
