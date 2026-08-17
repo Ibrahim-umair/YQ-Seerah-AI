@@ -129,7 +129,8 @@ def ask(request: Request, body: AskRequest):
                     search_log=event["search_log"], model=usage["model"],
                     prompt_tokens=usage["prompt_tokens"], completion_tokens=usage["completion_tokens"],
                     total_tokens=usage["total_tokens"], cost=usage["cost"],
-                    response_time=usage["response_time"], response_id=usage["response_id"],
+                    response_time=usage["response_time"], citation_time=usage["citation_time"],
+                    response_id=usage["response_id"],
                     previous_response_id=body.previous_response_id,
                 )
                 yield sse({"type": "done", "id": conversation_id, "answer": event["answer"],

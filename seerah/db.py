@@ -5,7 +5,10 @@ psycopg (no ORM), tables linked by a foreign key.
 
     conversations       - one row per question answered: the question, the
                           answer, the sources/search log it was grounded in,
-                          token counts, cost, and how long it took.
+                          token counts, cost, how long it took overall
+                          (response_time), and how long citation/timestamp
+                          refinement specifically took on top of that
+                          (citation_time).
     feedback            - one row per rating a user gives an ANSWER (+1/-1),
                           pointing back at the conversation it rates.
     timestamp_feedback  - one row per rating a user gives the PRIMARY
@@ -65,6 +68,12 @@ def init_db(drop=False):
                     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
                 )
             """)
+            # citation_time is newer than the original table - added via ALTER
+            # rather than the CREATE TABLE above so an already-deployed table
+            # picks it up without --drop (which would lose logged history).
+            cur.execute("""
+                ALTER TABLE conversations ADD COLUMN IF NOT EXISTS citation_time FLOAT
+            """)
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS feedback (
                     id SERIAL PRIMARY KEY,
@@ -88,10 +97,15 @@ def init_db(drop=False):
 
 def save_conversation(question, answer, sources, search_log, model,
                       prompt_tokens, completion_tokens, total_tokens, cost, response_time,
-                      response_id=None, previous_response_id=None):
+                      citation_time=None, response_id=None, previous_response_id=None):
     """Inserts one answered question. Returns the new row's id, which the
     caller (the API) hands back to the client so a later feedback call can
     reference this exact conversation.
+
+    citation_time is the citation-refinement call's own duration - timed
+    separately from response_time (see seerah.agent.SeerahAgent.ask), starting
+    only after the main answer is already generated, so it isolates how long
+    timestamp lookup specifically takes rather than the whole request.
 
     response_id/previous_response_id record the OpenAI conversation chain for
     this turn (see seerah.agent.SeerahAgent.ask) - not required for logging to
@@ -105,13 +119,13 @@ def save_conversation(question, answer, sources, search_log, model,
                 INSERT INTO conversations (
                     question, answer, sources, search_log, model,
                     prompt_tokens, completion_tokens, total_tokens, cost, response_time,
-                    response_id, previous_response_id
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    citation_time, response_id, previous_response_id
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
                 """,
                 (question, answer, Jsonb(sources), Jsonb(search_log), model,
                  prompt_tokens, completion_tokens, total_tokens, cost, response_time,
-                 response_id, previous_response_id),
+                 citation_time, response_id, previous_response_id),
             )
             conversation_id = cur.fetchone()[0]
         conn.commit()

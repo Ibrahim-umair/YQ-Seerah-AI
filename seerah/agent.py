@@ -494,8 +494,10 @@ class SeerahAgent:
                 "I don't have enough information in the lectures to answer that."
             )
 
+        citation_start_time = time.perf_counter()
         citation_timestamps, primary_keys, citation_tokens, extra_hits = self._refine_citations(
             question, final_answer, all_hits)
+        citation_time = time.perf_counter() - citation_start_time
         all_hits.update(extra_hits)  # a predecessor chunk that turned out to be the real citation target
         prompt_tokens += citation_tokens[0]
         completion_tokens += citation_tokens[1]
@@ -508,6 +510,7 @@ class SeerahAgent:
             "total_tokens": prompt_tokens + completion_tokens,
             "cost": config.summary_cost(self.model, prompt_tokens, completion_tokens, cached_tokens),
             "response_time": time.perf_counter() - start_time,
+            "citation_time": citation_time,
             "response_id": last_response_id,
             "citation_timestamps": citation_timestamps,
         }
@@ -648,8 +651,10 @@ class SeerahAgent:
                 "I don't have enough information in the lectures to answer that."
             )
 
+        citation_start_time = time.perf_counter()
         citation_timestamps, primary_keys, citation_tokens, extra_hits = self._refine_citations(
             question, final_answer, all_hits)
+        citation_time = time.perf_counter() - citation_start_time
         all_hits.update(extra_hits)  # a predecessor chunk that turned out to be the real citation target
         prompt_tokens += citation_tokens[0]
         completion_tokens += citation_tokens[1]
@@ -662,6 +667,7 @@ class SeerahAgent:
             "total_tokens": prompt_tokens + completion_tokens,
             "cost": config.summary_cost(self.model, prompt_tokens, completion_tokens, cached_tokens),
             "response_time": time.perf_counter() - start_time,
+            "citation_time": citation_time,
             "response_id": last_response_id,
             "citation_timestamps": citation_timestamps,
         }
