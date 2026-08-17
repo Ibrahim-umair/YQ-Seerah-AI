@@ -37,22 +37,16 @@
     },
     {
       "id": 12,
-      "title": "",
-      "type": "text",
+      "title": "Response",
+      "type": "row",
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 8
       },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "options": {
-        "mode": "markdown",
-        "content": "## Response"
-      }
+      "panels": []
     },
     {
       "datasource": {
@@ -60,7 +54,12 @@
         "uid": "seerah_postgres"
       },
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#6ED0E0"
+          }
+        },
         "overrides": []
       },
       "gridPos": {
@@ -93,8 +92,43 @@
         "uid": "seerah_postgres"
       },
       "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "thumbs_up"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#7EB26D"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "thumbs_down"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E24D42"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -126,7 +160,12 @@
         "uid": "seerah_postgres"
       },
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#1F78C1"
+          }
+        },
         "overrides": []
       },
       "gridPos": {
@@ -159,7 +198,12 @@
         "uid": "seerah_postgres"
       },
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#705DA0"
+          }
+        },
         "overrides": []
       },
       "gridPos": {
@@ -193,7 +237,11 @@
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "currencyUSD"
+          "unit": "currencyUSD",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#EAB839"
+          }
         },
         "overrides": []
       },
@@ -227,7 +275,7 @@
       "type": "stat",
       "gridPos": {
         "h": 6,
-        "w": 6,
+        "w": 8,
         "x": 0,
         "y": 25
       },
@@ -238,7 +286,11 @@
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "decimals": 2
+          "decimals": 2,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#1F78C1"
+          }
         },
         "overrides": []
       },
@@ -270,8 +322,8 @@
       "type": "stat",
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 6,
+        "w": 8,
+        "x": 8,
         "y": 25
       },
       "datasource": {
@@ -281,7 +333,11 @@
       "fieldConfig": {
         "defaults": {
           "unit": "currencyUSD",
-          "decimals": 4
+          "decimals": 4,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#EAB839"
+          }
         },
         "overrides": []
       },
@@ -308,23 +364,64 @@
       ]
     },
     {
+      "id": 14,
+      "title": "Total Conversations",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 25
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#6ED0E0"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "\n                SELECT COUNT(*) as total_conversations\n                FROM conversations\n                WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n            "
+        }
+      ]
+    },
+    {
       "id": 13,
-      "title": "",
-      "type": "text",
+      "title": "Timestamp",
+      "type": "row",
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 31
       },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "options": {
-        "mode": "markdown",
-        "content": "## Timestamp"
-      }
+      "panels": []
     },
     {
       "id": 9,
@@ -332,7 +429,7 @@
       "type": "stat",
       "gridPos": {
         "h": 6,
-        "w": 6,
+        "w": 8,
         "x": 0,
         "y": 32
       },
@@ -343,7 +440,11 @@
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "decimals": 2
+          "decimals": 2,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#BA43A9"
+          }
         },
         "overrides": []
       },
@@ -370,13 +471,142 @@
       ]
     },
     {
+      "id": 15,
+      "title": "Timestamp Accuracy",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 32
+      },
       "datasource": {
         "type": "grafana-postgresql-datasource",
         "uid": "seerah_postgres"
       },
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#7EB26D"
+          }
+        },
         "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "\n                SELECT ROUND(100.0 * SUM(CASE WHEN score > 0 THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0), 1) as accuracy_pct\n                FROM timestamp_feedback\n                WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n            "
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Total Timestamp Ratings",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 32
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#6ED0E0"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "seerah_postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "\n                SELECT COUNT(*) as total_ratings\n                FROM timestamp_feedback\n                WHERE created_at BETWEEN $__timeFrom() AND $__timeTo()\n            "
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "seerah_postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "thumbs_up"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#7EB26D"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "thumbs_down"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E24D42"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -408,7 +638,12 @@
         "uid": "seerah_postgres"
       },
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#BA43A9"
+          }
+        },
         "overrides": []
       },
       "gridPos": {
@@ -448,5 +683,5 @@
   "timezone": "browser",
   "title": "Seerah AI - Ops Dashboard",
   "uid": "seerah-ops",
-  "version": 5
+  "version": 6
 }
