@@ -192,6 +192,8 @@ curl http://localhost:8000/health  # confirm the containerized API is up
 
 With `make` installed, that whole sequence is `make install && make setup && make query`. Run `make help` to list every target.
 
+**Running in GitHub Codespaces**: `.devcontainer/devcontainer.json` gives a fresh codespace Python 3.13, Docker, and Node already set up — the steps above work as-is. One Codespaces-specific gotcha: `frontend/.env`'s default `VITE_API_URL=http://localhost:8000` only reaches the backend if you're using VS Code Desktop's Remote connection (it transparently forwards `localhost`). Opening the frontend in a plain browser tab instead needs the actual forwarded URL from the **Ports** tab for port 8000 (`https://<codespace-name>-8000.app.github.dev`) in place of `localhost:8000`, then restart `npm run dev`.
+
 ### The four ingestion stages
 
 Ingestion is split so each stage can be run, inspected and re-run independently. Every stage reads the previous stage's committed artifact, and **skips its work if its own output already exists** — so the two stages that cost money are ones you should never need to run.

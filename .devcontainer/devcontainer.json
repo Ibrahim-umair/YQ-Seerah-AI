@@ -1,0 +1,15 @@
+{
+  "name": "Seerah AI",
+  "image": "mcr.microsoft.com/devcontainers/python:3.13",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  },
+  "forwardPorts": [8000, 5173, 3000],
+  "portsAttributes": {
+    "8000": { "label": "Backend API", "onAutoForward": "notify" },
+    "5173": { "label": "Frontend (Vite)", "onAutoForward": "openPreview" },
+    "3000": { "label": "Grafana", "onAutoForward": "silent" }
+  },
+  "postCreateCommand": "pip install -r requirements.txt && cp -n .env.example .env && cp -n frontend/.env.example frontend/.env && echo '>>> Set a real OPENAI_API_KEY in .env before running anything. If the frontend cannot reach the API once both are running, see the Codespaces note in README.md Quick start.'"
+}
