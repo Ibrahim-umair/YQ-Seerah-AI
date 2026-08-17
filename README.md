@@ -192,7 +192,16 @@ curl http://localhost:8000/health  # confirm the containerized API is up
 
 With `make` installed, that whole sequence is `make install && make setup && make query`. Run `make help` to list every target.
 
-**Running in GitHub Codespaces**: `.devcontainer/devcontainer.json` gives a fresh codespace Python 3.13, Docker, and Node already set up — the steps above work as-is. One Codespaces-specific gotcha: `frontend/.env`'s default `VITE_API_URL=http://localhost:8000` only reaches the backend if you're using VS Code Desktop's Remote connection (it transparently forwards `localhost`). Opening the frontend in a plain browser tab instead needs the actual forwarded URL from the **Ports** tab for port 8000 (`https://<codespace-name>-8000.app.github.dev`) in place of `localhost:8000`, then restart `npm run dev`.
+### Running in GitHub Codespaces
+
+`.devcontainer/devcontainer.json` gives a fresh codespace Python 3.13, Docker, and Node already set up, and its `postCreateCommand` copies both `.env.example` files for you — the "Quick start" sequence above works as-is with two Codespaces-specific things to know going in:
+
+1. **The OpenAI key still needs filling in.** `postCreateCommand` only copies `.env.example` → `.env`; it can't know your key. Either edit `.env` after the codespace builds, or set `OPENAI_API_KEY` as a Codespaces secret beforehand (repo Settings → Secrets and variables → Codespaces) so it's already there when the container starts.
+2. **Reaching the backend from the frontend depends on how you open it:**
+   - **VS Code Desktop** connected to the codespace: `frontend/.env`'s default `VITE_API_URL=http://localhost:8000` just works — Desktop tunnels `localhost` transparently.
+   - **A plain browser tab** instead: grab the forwarded URL for port 8000 from the **Ports** tab (`https://<codespace-name>-8000.app.github.dev`) and put that in `frontend/.env` in place of `localhost:8000`, then restart `npm run dev`. That port also needs its visibility set to **Public** (right-click the port in the **Ports** tab → Port Visibility) — left on the default **Private**, GitHub's tunnel proxy rejects the browser's request with a 401 before it ever reaches the API, which Chrome then reports as a misleading CORS error rather than an auth one.
+
+(`frontend/vite.config.js` already sets `server: { host: true }` so Vite's dev server binds `0.0.0.0` instead of `127.0.0.1` — required for the Ports tab to forward it at all, regardless of which of the two cases above applies.)
 
 ### The four ingestion stages
 
