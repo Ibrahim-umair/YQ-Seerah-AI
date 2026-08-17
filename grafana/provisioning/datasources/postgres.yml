@@ -10,13 +10,13 @@ datasources:
     type: postgres
     access: proxy
     url: postgres:5432
-    database: seerah
-    user: seerah
+    database: $__env{POSTGRES_DB}
+    user: $__env{POSTGRES_USER}
     isDefault: true
     editable: false
     jsonData:
-      database: seerah
+      database: $__env{POSTGRES_DB}
       sslmode: disable
       postgresVersion: 1600
     secureJsonData:
-      password: seerah
+      password: $__env{POSTGRES_PASSWORD}

@@ -71,6 +71,12 @@ services:
       # local machine - defaults to "admin" (Grafana's own default) only so
       # nothing extra is required for local dev.
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      # Read by grafana/provisioning/datasources/postgres.yml via Grafana's
+      # own $__env{} substitution, so the Postgres datasource always matches
+      # whatever's actually in .env instead of a stale hardcoded default.
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
