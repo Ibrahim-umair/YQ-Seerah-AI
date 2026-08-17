@@ -4,6 +4,18 @@ import "./App.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+// DM Sans (loaded from Google Fonts) has no Arabic glyphs, so rendering ﷺ
+// under it makes the browser probe Google's other unicode-range subsets
+// looking for a match - one of those subset files 404s. Isolating the glyph
+// in a span with a font stack that never names DM Sans stops the browser
+// from asking Google Fonts about it at all; a local system font covers it
+// instead, with no network request.
+function withSafeGlyphs(text) {
+  return text.split("ﷺ").flatMap((part, i, arr) =>
+    i < arr.length - 1 ? [part, <span key={i} className="safe-glyph">ﷺ</span>] : [part]
+  );
+}
+
 // Real questions from the eval set (data/eval_questions_raw.json), not
 // invented - each one is grounded in a specific, verified incident rather
 // than a vague topic, so retrieval lands on a narrow, precise set of chunks
@@ -331,7 +343,7 @@ export default function App() {
                   </span>
                   <div>
                     {categories.find((c) => c.name === selectedCategory).prompts.map((item) => (
-                      <button key={item} type="button" onClick={() => setQuery(item)}>{item}</button>
+                      <button key={item} type="button" onClick={() => setQuery(item)}>{withSafeGlyphs(item)}</button>
                     ))}
                   </div>
                 </>
@@ -426,7 +438,7 @@ export default function App() {
                               allowFullScreen
                             />
                           ) : (
-                            <div className="video-placeholder"><span>✦</span><small>SEERAH OF THE</small><h2>Prophet Muhammad ﷺ</h2></div>
+                            <div className="video-placeholder"><span>✦</span><small>SEERAH OF THE</small><h2>{withSafeGlyphs("Prophet Muhammad ﷺ")}</h2></div>
                           )}
                         </div>
                         <div className="timestamp-feedback">
@@ -473,7 +485,7 @@ export default function App() {
         {!hasConversation && (
           <section className="info-section" id="about">
             <div><small>ABOUT SEERAH AI</small><h2>Explore the Seerah through the original lectures.</h2></div>
-            <p>Ask a question about the life of the Prophet ﷺ and receive an answer grounded in Yasir Qadhi's Seerah series. Every answer points back to the relevant lecture and timestamp.</p>
+            <p>{withSafeGlyphs("Ask a question about the life of the Prophet ﷺ and receive an answer grounded in Yasir Qadhi's Seerah series. Every answer points back to the relevant lecture and timestamp.")}</p>
           </section>
         )}
       </main>
