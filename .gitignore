@@ -4,6 +4,9 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
+# Wrangler's local build/deploy cache (frontend/) - not meant to be version-controlled.
+.wrangler/
+
 # Local Claude Code tool permissions - machine-specific, not project config.
 .claude/settings.local.json
 
