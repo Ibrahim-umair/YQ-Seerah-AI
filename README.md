@@ -205,7 +205,7 @@ With `make` installed, that whole sequence is `make install && make setup && mak
 
 ### The four ingestion stages
 
-Ingestion is split so each stage can be run, inspected and re-run independently. Every stage reads the previous stage's committed artifact, and **skips its work if its own output already exists** — so the two stages that cost money are ones you should never need to run.
+Ingestion is split so each stage can be run, inspected and re-run independently. Every stage reads the previous stage's committed artifact, and **skips its work if its own output already exists** — so the two stages that cost money are ones you should never need to run. This is a plain Python/Makefile pipeline rather than a dedicated orchestration tool (Airflow, Kestra, dlt) by design, not by omission — per the [course FAQ](https://datatalks.club/faq/llm-zoomcamp.html), a plain script that ingests and indexes the data is enough for full points on this criterion; a notebook doing the same steps is worth less, not more.
 
 | Stage | Command | Input → output | Cost |
 |---|---|---|---|
