@@ -82,6 +82,33 @@ function getVideoId(youtubeUrl) {
   }
 }
 
+// A bare YouTube iframe shows a blank/black frame for a couple of seconds
+// while the embed page itself loads before it can paint anything, even
+// just the thumbnail. Showing our own thumbnail image first - a single,
+// instantly-loading file - and only mounting the real iframe once the user
+// actually clicks play avoids that flash for anyone who never clicks, and
+// moves it after an intentional action for anyone who does.
+function VideoEmbed({ videoId, lectureNumber, startSeconds }) {
+  const [playing, setPlaying] = useState(false);
+
+  if (playing) {
+    return (
+      <iframe
+        src={`https://www.youtube-nocookie.com/embed/${videoId}?start=${startSeconds}&autoplay=1&rel=0`}
+        title={`Seerah Lecture ${lectureNumber}`}
+        allow="autoplay; encrypted-media"
+        allowFullScreen
+      />
+    );
+  }
+  return (
+    <button type="button" className="video-facade" onClick={() => setPlaying(true)} aria-label="Play video">
+      <img src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`} alt="" loading="lazy" />
+      <span className="play-btn">▶</span>
+    </button>
+  );
+}
+
 function ArrowIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -432,10 +459,10 @@ export default function App() {
                         </div>
                         <div className="video-wrap">
                           {videoId ? (
-                            <iframe
-                              src={`https://www.youtube-nocookie.com/embed/${videoId}?start=${Math.floor(primary.start_timestamp_seconds)}&rel=0`}
-                              title={`Seerah Lecture ${primary.lecture_number}`}
-                              allowFullScreen
+                            <VideoEmbed
+                              videoId={videoId}
+                              lectureNumber={primary.lecture_number}
+                              startSeconds={Math.floor(primary.start_timestamp_seconds)}
                             />
                           ) : (
                             <div className="video-placeholder"><span>✦</span><small>SEERAH OF THE</small><h2>{withSafeGlyphs("Prophet Muhammad ﷺ")}</h2></div>

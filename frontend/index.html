@@ -8,6 +8,11 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- The video card's thumbnail comes from i.ytimg.com, and clicking play
+         loads an iframe from youtube-nocookie.com - warming up the DNS/TLS
+         connection to both ahead of time shaves real latency off both. -->
+    <link rel="preconnect" href="https://i.ytimg.com" />
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
     <title>Seerah AI</title>
 
     <!-- Open Graph / link-preview tags - what WhatsApp, Slack, Discord, iMessage, etc.
