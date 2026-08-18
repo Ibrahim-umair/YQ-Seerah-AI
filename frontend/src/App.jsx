@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useId } from "react";
 import ReactMarkdown from "react-markdown";
 import "./App.css";
 
@@ -82,30 +82,80 @@ function getVideoId(youtubeUrl) {
   }
 }
 
+// Loads YouTube's IFrame Player API script exactly once no matter how many
+// video cards exist, and resolves with the same window.YT object every time
+// (chaining onto any onYouTubeIframeAPIReady callback already registered).
+let ytApiPromise = null;
+function loadYouTubeApi() {
+  if (window.YT?.Player) return Promise.resolve(window.YT);
+  if (ytApiPromise) return ytApiPromise;
+  ytApiPromise = new Promise((resolve) => {
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      previous?.();
+      resolve(window.YT);
+    };
+    const script = document.createElement("script");
+    script.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(script);
+  });
+  return ytApiPromise;
+}
+
 // A bare YouTube iframe shows a blank/black frame for a couple of seconds
 // while the embed page itself loads before it can paint anything, even
-// just the thumbnail. Showing our own thumbnail image first - a single,
-// instantly-loading file - and only mounting the real iframe once the user
-// actually clicks play avoids that flash for anyone who never clicks, and
-// moves it after an intentional action for anyone who does.
-function VideoEmbed({ videoId, lectureNumber, startSeconds }) {
-  const [playing, setPlaying] = useState(false);
+// just the thumbnail - and if that load only starts on click, the user eats
+// that delay right when they want to watch. So instead: create the real
+// player in the background the moment this card appears - loaded with the
+// right video and start time via its own constructor params, so no
+// cross-origin postMessage round-trip is needed just to get the correct
+// video showing - hidden behind our own instantly-loading thumbnail image.
+// By the time the user clicks, the heavy load has already happened;
+// clicking just calls playVideo() on an already-ready player, which is
+// instant.
+function VideoEmbed({ videoId, startSeconds }) {
+  const rawId = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const containerId = `yt-player-${rawId}`;
+  const playerRef = useRef(null);
+  const [clicked, setClicked] = useState(false);
 
-  if (playing) {
-    return (
-      <iframe
-        src={`https://www.youtube-nocookie.com/embed/${videoId}?start=${startSeconds}&autoplay=1&rel=0`}
-        title={`Seerah Lecture ${lectureNumber}`}
-        allow="autoplay; encrypted-media"
-        allowFullScreen
-      />
-    );
-  }
+  useEffect(() => {
+    let cancelled = false;
+    loadYouTubeApi().then((YT) => {
+      if (cancelled) return;
+      playerRef.current = new YT.Player(containerId, {
+        videoId,
+        host: "https://www.youtube-nocookie.com",
+        playerVars: { rel: 0, start: startSeconds },
+      });
+    });
+    return () => {
+      cancelled = true;
+      playerRef.current?.destroy?.();
+    };
+    // Each card is mounted once for one fixed video - never reused for a
+    // different one - so this intentionally only runs on mount/unmount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <button type="button" className="video-facade" onClick={() => setPlaying(true)} aria-label="Play video">
-      <img src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`} alt="" loading="lazy" />
-      <span className="play-btn">▶</span>
-    </button>
+    <>
+      <div id={containerId} />
+      {!clicked && (
+        <button
+          type="button"
+          className="video-facade"
+          aria-label="Play video"
+          onClick={() => {
+            setClicked(true);
+            playerRef.current?.playVideo();
+          }}
+        >
+          <img src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`} alt="" loading="lazy" />
+          <span className="play-btn">▶</span>
+        </button>
+      )}
+    </>
   );
 }
 
@@ -461,7 +511,6 @@ export default function App() {
                           {videoId ? (
                             <VideoEmbed
                               videoId={videoId}
-                              lectureNumber={primary.lecture_number}
                               startSeconds={Math.floor(primary.start_timestamp_seconds)}
                             />
                           ) : (
