@@ -37,7 +37,7 @@ const categories = [
     prompts: [
       "How did Hamza come to accept Islam?",
       "How did the number of daily prayers end up at five?",
-      "When his uncle finally begged him to drop the whole thing, what did the Prophet say back?",
+      "When his uncle asked him to abandon his message, what was the Prophet's ﷺ reply?",
       "What price did Suhayb the Roman have to pay before the Quraysh would let him leave Mecca?",
       "Did Bilal ever come face to face with the man who used to torture him, and what happened?",
     ],
