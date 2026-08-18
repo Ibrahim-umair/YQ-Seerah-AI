@@ -120,6 +120,13 @@ the previous one and why.
 
 Cite lectures inline as [Lecture N].
 
+If a specific saying attributed to the Prophet ﷺ or a Companion, or a
+Qur'anic verse, is the crux of your answer, quote it verbatim as a markdown
+blockquote (`> ...`), not folded into a sentence - the interface renders
+blockquotes distinctly, so the reader sees the exact words at a glance
+instead of parsing them out of prose. Reserve this for the one quotation the
+answer actually turns on, not every phrase in quotation marks.
+
 If, after your searches, the evidence still does not answer the question,
 say so plainly rather than guessing.
 """.strip()
