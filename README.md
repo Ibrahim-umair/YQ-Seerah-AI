@@ -4,6 +4,8 @@ A retrieval-augmented Q&A system over Shaykh Dr. Yasir Qadhi's 104-part Seerah l
 
 **Live demo**: [seerah-ai.ibrahimumair900.workers.dev](https://seerah-ai.ibrahimumair900.workers.dev)
 
+![Seerah AI answering a question, with a direct quotation cited back to its lecture](docs/screenshots/app-demo.png)
+
 ## Overview
 
 The source material is 104 long-form video lectures (~1.3M words total) with no searchable index — finding where a specific event is discussed means scrubbing through hours of video. This project turns that corpus into something queryable: natural-language questions are answered from the transcripts themselves, not from an LLM's general knowledge, with every claim traceable to a specific lecture and moment in the video.
@@ -46,6 +48,8 @@ Retrieval and generation are evaluated separately, against a 304-question benchm
 | Vector only | 0.687 | 0.438 |
 | **Hybrid (RRF)** | **0.699** | **0.484** |
 
+Hybrid retrieval outperforms either method alone on both metrics, particularly for questions whose answer requires multiple chunks.
+
 **Generation**, judged by an LLM on two independent axes — relevance to a curated reference answer, and faithfulness to the retrieved context:
 
 | Metric | Result |
@@ -53,14 +57,18 @@ Retrieval and generation are evaluated separately, against a 304-question benchm
 | Relevant | 99.0% |
 | Grounded (no hallucination) | 97.0% |
 
+The agentic pipeline (iterative search, self-correction) is used in production over a single-shot alternative also implemented in this repo, based on this evaluation.
+
 ## Tech Stack
 
-- **Retrieval**: Qdrant (vector), BM25, OpenAI embeddings
-- **Generation**: OpenAI Responses API, agentic tool-calling
-- **Backend**: FastAPI, PostgreSQL
-- **Frontend**: React, Vite
-- **Monitoring**: Grafana
-- **Infra**: Docker Compose
+- **Qdrant** — vector store for semantic search over lecture chunks
+- **BM25** — keyword search, fused with vector results via Reciprocal Rank Fusion
+- **OpenAI API** — embeddings, answer generation, and the agentic search loop (Responses API)
+- **FastAPI** — backend API, streaming responses over Server-Sent Events
+- **PostgreSQL** — conversation logs and user feedback
+- **React + Vite** — chat interface
+- **Grafana** — usage, cost, and feedback dashboard
+- **Docker Compose** — local development and service orchestration
 
 ## Getting Started
 
