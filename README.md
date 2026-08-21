@@ -1,4 +1,4 @@
-# Seerah AI
+<h1 align="center">Seerah AI</h1>
 
 A retrieval-augmented Q&A system over Shaykh Dr. Yasir Qadhi's 104-part Seerah lecture series (the life of the Prophet Muhammad ﷺ). Ask a question in natural language and get an answer grounded in the actual lecture transcripts, with a citation back to the exact lecture and timestamp it came from.
 
@@ -21,34 +21,27 @@ The source material is 104 long-form video lectures (~1.3M words total) with no 
 
 ## Architecture
 
-```
-Transcripts ─▶ Chunking ─▶ Contextual Summaries ─▶ Embeddings (Qdrant)
-                                                 └─▶ BM25 Index
-
-Query ─▶ Agent (iterative search) ─▶ Hybrid Retrieval (RRF) ─▶ Answer Generation
-                                                                    │
-                                                     Citation Timestamp Refinement
-                                                                    │
-                                                              Streamed Response
-```
-
 **Ingestion**: transcripts are split with sentence-aware chunking, enriched with an LLM-generated contextual summary per chunk (improves retrieval by giving each chunk surrounding context it would otherwise lack), then embedded (OpenAI `text-embedding-3-large`) and indexed for both vector and keyword search.
 
+![Ingestion pipeline: transcripts to chunking to contextual summaries to embeddings and BM25 index](docs/screenshots/architecture-ingestion.png)
+
 **Query time**: an agent (`seerah/agent.py`) issues one or more searches against the hybrid index, synthesizes an answer strictly from what it retrieves, and cites the supporting lecture(s). A second pass then pins each citation to the exact timestamp in the source video that supports the specific claim being made, validated against real transcript timestamps so nothing is invented.
+
+![Query pipeline: query to agent to hybrid retrieval to answer generation to citation refinement to streamed response](docs/screenshots/architecture-query.png)
 
 ## Evaluation
 
 Retrieval and generation are evaluated separately, against a 304-question benchmark set spanning single-chunk, multi-chunk, and cross-lecture questions.
 
-**Retrieval** (recall@10 / full-coverage@10):
+**Retrieval** (recall@10):
 
-| Method | Recall | Full Coverage |
-|---|---:|---:|
-| BM25 only | 0.520 | 0.303 |
-| Vector only | 0.687 | 0.438 |
-| **Hybrid (RRF)** | **0.699** | **0.484** |
+| Method | Recall |
+|---|---:|
+| BM25 only | 0.520 |
+| Vector only | 0.687 |
+| **Hybrid (RRF)** | **0.699** |
 
-Hybrid retrieval outperforms either method alone on both metrics, particularly for questions whose answer requires multiple chunks.
+Hybrid retrieval outperforms either method alone, particularly for questions whose answer requires multiple chunks.
 
 **Generation**, judged by an LLM on two independent axes — relevance to a curated reference answer, and faithfulness to the retrieved context:
 
@@ -115,18 +108,18 @@ Every request is logged to Postgres (tokens, cost, latency, citation-timing) alo
 ## Project Structure
 
 ```
-seerah/
-  config.py              paths, models, and constants
-  retrieve.py            vector + BM25 retrieval
-  answer.py              single-shot RAG pipeline
-  agent.py               agentic RAG pipeline
-  db.py                  Postgres schema + logging
-  api.py                 FastAPI app
-  ingest/                chunking, contextualization, embedding, indexing
-  eval/                  retrieval + LLM-as-judge evaluation
-frontend/                React + Vite chat UI
-grafana/provisioning/    dashboard + data source config
-data/                    dataset and pipeline artifacts
-Dockerfile
-docker-compose.yml
+📁seerah/
+  🐍config.py              paths, models, and constants
+  🐍retrieve.py            vector + BM25 retrieval
+  🐍answer.py              single-shot RAG pipeline
+  🐍agent.py               agentic RAG pipeline
+  🐍db.py                  Postgres schema + logging
+  🐍api.py                 FastAPI app
+  📁ingest/                chunking, contextualization, embedding, indexing
+  📁eval/                  retrieval + LLM-as-judge evaluation
+📁frontend/                React + Vite chat UI
+📁grafana/provisioning/    dashboard + data source config
+📁data/                    dataset and pipeline artifacts
+🐳Dockerfile
+🐳docker-compose.yml
 ```
